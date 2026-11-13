@@ -1,0 +1,23 @@
+# PostgreSQL local para desenvolvimento do CONEXA.
+# Uso: docker compose -f infra/docker-compose.yml up -d db
+services:
+  db:
+    image: postgres:17
+    container_name: conexa-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: conexa
+      POSTGRES_USER: conexa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-conexa_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - conexa-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U conexa -d conexa"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  conexa-pgdata:

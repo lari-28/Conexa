@@ -1,0 +1,25 @@
+namespace Conexa.Api.Domain.Entities;
+
+public class Event
+{
+    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTimeOffset StartsAt { get; set; }
+    public DateTimeOffset EndsAt { get; set; }
+    public string? Location { get; set; }
+    public EventStatus Status { get; set; } = EventStatus.Draft;
+
+    public ICollection<EventMembership> Memberships { get; set; } = new List<EventMembership>();
+}
+
+public class EventMembership
+{
+    public Guid EventId { get; set; }
+    public Event Event { get; set; } = null!;
+    public Guid UserId { get; set; }
+    public ApplicationUser User { get; set; } = null!;
+    public EventRole RoleInEvent { get; set; } = EventRole.Participant;
+    public MembershipStatus Status { get; set; } = MembershipStatus.Active;
+    public DateTimeOffset JoinedAt { get; set; } = DateTimeOffset.UtcNow;
+}
