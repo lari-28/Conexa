@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "component-library": {
+      "targetKind": "new-ui",
+      "projectId": "99c8fa6e-e261-47f5-beb0-ea6437b79c81",
+      "activeDraftId": "5d7a2b03-91c8-4362-96f2-e1ab4f153ca8",
+      "designSystemPath": ".superdesign/design-system.md",
+      "components": [
+        {
+          "name": "AppLayout",
+          "id": "1d445dd8-c026-4bd7-aa2a-556738058139",
+          "sourcePath": "frontend/conexa-web/src/components/layout/AppLayout.tsx"
+        }
+      ],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "frontend/conexa-web/src/index.css",
+        "frontend/conexa-web/src/components/layout/AppLayout.tsx",
+        "frontend/conexa-web/src/components/ui/index.tsx",
+        "frontend/conexa-web/src/components/common/index.tsx",
+        "frontend/conexa-web/src/features/participants/ParticipantCard.tsx",
+        "frontend/conexa-web/src/features/forum/PostCard.tsx",
+        "frontend/conexa-web/src/pages/ParticipantsPage.tsx"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "87a2cef2990563717692f36641ff0769734441d9284c6e8342e61b0507e3fe36",
+        "frontend/conexa-web/src/index.css": "bf68f9ebbca72f62e7d892c984929284916f602d5ab657434862fa903fa3aad1",
+        "frontend/conexa-web/src/components/layout/AppLayout.tsx": "297f829fcb733b1794265106b02d21065d0aa41622f2ad1330847af8e106d3d5",
+        "frontend/conexa-web/src/components/ui/index.tsx": "188c66694af97ceb29408636eca847c6db251cb2fd0e1aebc65e28ef5cb0d3dd",
+        "frontend/conexa-web/src/components/common/index.tsx": "04b7c13cc6f074a6862812cba5d91908ee1b367f0c82a0f7fde82c29cfffc97f",
+        "frontend/conexa-web/src/features/participants/ParticipantCard.tsx": "ff9d444b833f218312b79565ea81ae5e3741c0b991ae386c0d91d7f14e02bce6",
+        "frontend/conexa-web/src/features/forum/PostCard.tsx": "17bb19adb82b208adcdc3718fa98ae75d88b1fad4882cccb5115f83f46c027e2",
+        "frontend/conexa-web/src/pages/ParticipantsPage.tsx": "6b600d2a34cd3ec3a7d04fd382cea7b69bd975888785477236b69fc228f9fbca"
+      },
+      "drafts": {
+        "5d7a2b03-91c8-4362-96f2-e1ab4f153ca8": {
+          "title": "CONEXA UI Kit - Circuit Black Racing Chrome",
+          "visualDirection": "Circuit Black Racing Chrome: graphite-black surfaces, polished chrome details, restrained racing-red signals, and fine circuit-inspired linework",
+          "currentVersion": 3
+        }
+      },
+      "updatedAt": "2026-11-13T16:01:59.852-03:00"
+    }
+  }
+}

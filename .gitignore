@@ -12,3 +12,4 @@ dist/
 appsettings.Local.json
 *.log
 .DS_Store
+/.superdesign/tmp/
