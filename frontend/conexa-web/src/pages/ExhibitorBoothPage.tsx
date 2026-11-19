@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useCurrentEvent } from '../features/events/EventContext';
 import { TagPicker } from '../features/taxonomy/TagPicker';
+import { BoothQr } from '../features/matching/BoothQr';
 import { companiesApi } from '../services/api/endpoints';
 import { ApiError } from '../services/api/client';
 import { useAsync } from '../hooks/useAsync';
@@ -96,6 +97,7 @@ function BoothForm({ eventId, initial, onSaved }: { eventId: string; initial: Co
         <Button type="submit" loading={busy}>Salvar estande</Button>
         {initial && <Link className="btn" to={`/empresas/${initial.id}`}>Ver como visitante</Link>}
       </div>
+      {initial && <BoothQr eventId={eventId} companyId={initial.id} name={initial.name} />}
     </form>
   );
 }

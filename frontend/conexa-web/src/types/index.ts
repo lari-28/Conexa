@@ -238,3 +238,8 @@ export interface LeadMatch {
   score: number; band: MatchBand; reasons: string[]; email: string | null; phone: string | null;
 }
 export interface LeadMatchesResponse { items: LeadMatch[]; consentingVisitors: number }
+
+export interface AppNotification {
+  id: string; eventId: string; title: string; body: string; link: string | null; createdAt: string; read: boolean;
+}
+export interface CheckInResult { companyId: string; companyName: string; alreadyRecorded: boolean }

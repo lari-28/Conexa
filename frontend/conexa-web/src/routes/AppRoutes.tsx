@@ -6,6 +6,8 @@ import { RegisterPage } from '../pages/RegisterPage';
 import { RegisterChoicePage } from '../pages/RegisterChoicePage';
 import { HomePage } from '../pages/HomePage';
 import { InvitePage } from '../pages/InvitePage';
+import { NotificationsPage } from '../pages/NotificationsPage';
+import { CheckInPage } from '../pages/CheckInPage';
 import { OrganizerInvitesPage } from '../pages/organizer/OrganizerInvitesPage';
 import { OrganizerImportPage } from '../pages/organizer/OrganizerImportPage';
 import { EventPage } from '../pages/EventPage';
@@ -38,6 +40,8 @@ export function AppRoutes() {
           <Route path="/evento" element={<EventPage />} />
           <Route path="/participantes" element={<ParticipantsPage />} />
           <Route path="/participantes/:id" element={<ParticipantDetailPage />} />
+          <Route path="/avisos" element={<NotificationsPage />} />
+          <Route path="/checkin/:code" element={<CheckInPage />} />
           <Route path="/evento/meu-perfil" element={<VisitorProfilePage />} />
           <Route path="/evento/meu-estande" element={<ExhibitorBoothPage />} />
           <Route path="/empresas" element={<CompaniesPage />} />

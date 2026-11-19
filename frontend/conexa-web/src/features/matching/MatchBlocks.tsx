@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { companiesApi, matchingApi } from '../../services/api/endpoints';
+import { companiesApi, engagementApi, matchingApi } from '../../services/api/endpoints';
 import { useAsync } from '../../hooks/useAsync';
 import { Alert, Avatar, Loading } from '../../components/ui';
 import type { MatchBand } from '../../types';
@@ -10,7 +11,20 @@ function Band({ band }: { band: MatchBand }) {
   return <span className="badge badge-match">{bandLabel[band]}</span>;
 }
 
-const note = 'Recomendação automática por afinidade com o que foi informado. Pode errar: use como ponto de partida.';
+/** "Isso foi útil?": alimenta o reajuste dos pesos com dados reais. */
+function Feedback({ eventId, companyId }: { eventId: string; companyId: string }) {
+  const [sent, setSent] = useState<boolean | null>(null);
+  const send = (useful: boolean) => { setSent(useful); engagementApi.feedback(eventId, companyId, useful).catch(() => setSent(null)); };
+  return (
+    <span className="fb small">
+      <span className="muted">Isso foi útil?</span>
+      <button type="button" className={`chip ${sent === true ? 'chip-on' : ''}`} aria-pressed={sent === true} onClick={() => send(true)}>Sim</button>
+      <button type="button" className={`chip ${sent === false ? 'chip-on' : ''}`} aria-pressed={sent === false} onClick={() => send(false)}>Não</button>
+    </span>
+  );
+}
+
+const note ='Recomendação automática por afinidade com o que foi informado. Pode errar: use como ponto de partida.';
 
 /** "Estandes para você": recomendações para o visitante, com o motivo de cada uma. */
 export function BoothMatchesBlock({ eventId }: { eventId: string }) {
@@ -36,6 +50,7 @@ export function BoothMatchesBlock({ eventId }: { eventId: string }) {
             <ul className="plain small muted" style={{ marginTop: '.25rem' }}>
               {m.reasons.map((r) => <li key={r}>{r}</li>)}
             </ul>
+            <Feedback eventId={eventId} companyId={m.companyId} />
           </div>
           <Band band={m.band} />
         </div>

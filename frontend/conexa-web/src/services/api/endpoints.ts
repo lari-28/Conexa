@@ -4,7 +4,7 @@ import type {
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
   LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
-  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview,
+  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview, AppNotification, CheckInResult,
 } from '../../types';
 
 export const authApi = {
@@ -156,6 +156,21 @@ export const invitesApi = {
   create: (eventId: string, data: { role: EventRole; maxUses: number | null; expiresInDays: number | null }) =>
     api.post<Invite>(`/api/organizer/events/${eventId}/invites`, data),
   revoke: (eventId: string, id: string) => api.delete<void>(`/api/organizer/events/${eventId}/invites/${id}`),
+};
+
+export const engagementApi = {
+  checkInCode: (eventId: string, companyId: string) =>
+    api.get<{ code: string }>(`/api/events/${eventId}/companies/${companyId}/checkin-code`),
+  checkIn: (eventId: string, code: string) => api.post<CheckInResult>(`/api/events/${eventId}/checkins`, { code }),
+  feedback: (eventId: string, companyId: string, useful: boolean) =>
+    api.post<void>(`/api/events/${eventId}/matches/feedback`, { companyId, useful }),
+};
+
+export const notificationsApi = {
+  list: (unreadOnly = false) => api.get<AppNotification[]>('/api/notifications', { unreadOnly }),
+  count: () => api.get<number>('/api/notifications/count'),
+  read: (id: string) => api.post<void>(`/api/notifications/${id}/read`),
+  readAll: () => api.post<void>('/api/notifications/read-all'),
 };
 
 export const importApi = {

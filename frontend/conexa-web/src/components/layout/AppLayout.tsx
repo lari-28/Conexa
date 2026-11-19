@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import { useEvent } from '../../features/events/EventContext';
 import { Alert, Avatar, EmptyState, Loading } from '../ui';
+import { notificationsApi } from '../../services/api/endpoints';
+import { NOTIFICATIONS_CHANGED } from '../../pages/NotificationsPage';
 
 const svg = (d: string) => (
   <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -22,6 +24,19 @@ export function AppLayout() {
   const { events, current, select, loading } = useEvent();
   const [menu, setMenu] = useState(false);
   const navigate = useNavigate();
+  const [unread, setUnread] = useState(0);
+
+  // Contador de avisos: atualiza ao montar, a cada minuto e quando a página de avisos muda algo.
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    const load = () => { notificationsApi.count().then((n) => { if (alive) setUnread(n); }).catch(() => undefined); };
+    load();
+    const t = window.setInterval(load, 60_000);
+    window.addEventListener(NOTIFICATIONS_CHANGED, load);
+    return () => { alive = false; window.clearInterval(t); window.removeEventListener(NOTIFICATIONS_CHANGED, load); };
+  }, [user]);
+
   if (!user) return null;
 
   const extra = [
@@ -54,6 +69,12 @@ export function AppLayout() {
           <nav className="top-nav" aria-label="Principal">
             {mainLinks.map((l) => <NavLink key={l.to} to={l.to}>{l.icon}{l.label}</NavLink>)}
           </nav>
+          <NavLink to="/avisos" className="bell" aria-label={unread > 0 ? `Avisos (${unread} novos)` : 'Avisos'}>
+            <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" />
+            </svg>
+            {unread > 0 && <span className="bell-count">{unread > 9 ? '9+' : unread}</span>}
+          </NavLink>
           <button className="user-btn" onClick={() => setMenu((m) => !m)} aria-label="Menu do usuário" aria-expanded={menu}>
             <Avatar name={user.displayName} url={user.photoUrl} size={32} />
           </button>

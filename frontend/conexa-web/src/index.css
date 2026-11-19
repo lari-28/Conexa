@@ -219,3 +219,14 @@ input[type="checkbox"], input[type="radio"] { width: 1rem; min-height: 1rem; mar
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Avisos */
+.bell { position: relative; display: inline-flex; padding: .5rem; margin-left: auto; color: var(--muted); border-radius: var(--control-radius); }
+.bell:hover, .bell.active { color: var(--indigo); }
+.bell + .user-btn { margin-left: 0; }
+.bell-count { position: absolute; top: 0; right: 0; min-width: 18px; padding: 0 .3rem; color: #fff; background: var(--coral-dark); border-radius: 999px; font-size: .7rem; font-weight: 700; line-height: 18px; text-align: center; }
+.fb { display: inline-flex; gap: .35rem; align-items: center; }
+
+@media print {
+  .topbar, .bottom-nav, .btn { display: none !important; }
+}
