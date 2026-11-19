@@ -391,6 +391,52 @@ namespace Conexa.Api.Migrations
                     b.ToTable("InterestTags");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.MatchScore", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double?>("AudienceScore")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Band")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTimeOffset>("ComputedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.PrimitiveCollection<List<string>>("Reasons")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("TextScore")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("ThemeScore")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("EventId", "UserId", "CompanyId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("EventId", "CompanyId", "Score");
+
+                    b.ToTable("MatchScores");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantEventProfile", b =>
                 {
                     b.Property<Guid>("EventId")
@@ -848,6 +894,25 @@ namespace Conexa.Api.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.MatchScore", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantEventProfile", b =>

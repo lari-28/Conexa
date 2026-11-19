@@ -197,3 +197,15 @@ public class ParticipantTagConfiguration : IEntityTypeConfiguration<ParticipantT
         b.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).OnDelete(DeleteBehavior.Restrict);
     }
 }
+
+public class MatchScoreConfiguration : IEntityTypeConfiguration<MatchScore>
+{
+    public void Configure(EntityTypeBuilder<MatchScore> b)
+    {
+        b.HasKey(x => new { x.EventId, x.UserId, x.CompanyId });
+        b.Property(x => x.Band).HasMaxLength(10);
+        b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId).OnDelete(DeleteBehavior.Cascade);
+        b.HasIndex(x => new { x.EventId, x.CompanyId, x.Score });
+    }
+}

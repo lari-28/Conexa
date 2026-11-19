@@ -73,3 +73,14 @@ Perfil do próprio usuário dentro do evento. O objetivo em texto livre é o sin
 | PUT | `/api/events/{eventId}/companies/{companyId}` | organizador ou representante |
 
 O detalhe (`GET .../companies/{companyId}`) passou a trazer `idealCustomer` e `tags`.
+
+## Matching v1 (Etapa 3)
+
+Motor híbrido sem LLM: tema (chips, com crédito parcial para a mesma macro-área) + texto livre (TF-IDF de n-gramas de caracteres) + público-alvo. Sinais ausentes saem da soma; público-alvo sozinho não sustenta recomendação. Cada resultado traz score, faixa (`High`/`Medium`/`Low`; abaixo disso é "sem match" e não aparece) e a explicação em linguagem natural. **Pesos e limiares são hipótese não calibrada** (ver `MatchOptions`).
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/events/{eventId}/matches/booths?limit=` | membro; exige perfil pronto e consentimento de matching |
+| GET | `/api/events/{eventId}/companies/{companyId}/leads?limit=` | organizador ou representante; só visitantes que consentiram matching **e** compartilhamento; contato segue a privacidade do perfil |
+
+Os scores ficam em `MatchScores` (decomposição + motivos).

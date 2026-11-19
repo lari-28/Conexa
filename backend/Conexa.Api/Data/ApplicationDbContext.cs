@@ -20,6 +20,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<CompanyTag> CompanyTags => Set<CompanyTag>();
     public DbSet<ParticipantEventProfile> ParticipantEventProfiles => Set<ParticipantEventProfile>();
     public DbSet<ParticipantTag> ParticipantTags => Set<ParticipantTag>();
+    public DbSet<MatchScore> MatchScores => Set<MatchScore>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
