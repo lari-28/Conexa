@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
 import { ApiError } from '../services/api/client';
 import { Alert, Button, Input } from '../components/ui';
@@ -38,7 +38,9 @@ function RegisterForm({ slug, accountType }: { slug: ProfileSlug; accountType: '
   const { register } = useAuth();
   const navigate = useNavigate();
   const profile = profiles[slug];
-  const [form, setForm] = useState({ name: '', email: '', password: '', inviteCode: '' });
+  const [params] = useSearchParams();
+  const fromLink = params.get('convite') ?? '';
+  const [form, setForm] = useState({ name: '', email: '', password: '', inviteCode: fromLink });
   const [showInvite, setShowInvite] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fields, setFields] = useState<Record<string, string[]>>({});
@@ -76,7 +78,8 @@ function RegisterForm({ slug, accountType }: { slug: ProfileSlug; accountType: '
         <Input label="E-mail" type="email" autoComplete="email" required value={form.email} onChange={set('email')} error={fieldError('email')} />
         <Input label="Senha" type="password" autoComplete="new-password" required minLength={8} value={form.password} onChange={set('password')}
           hint="Mínimo de 8 caracteres, com letras maiúsculas, minúsculas e números." error={fieldError('password')} />
-        {showInvite
+        {fromLink ? <Alert tone="info">Convite aplicado: você entrará no evento do convite.</Alert>
+          : showInvite
           ? <Input label="Código de convite" value={form.inviteCode} onChange={set('inviteCode')} />
           : <button type="button" className="invite-toggle" onClick={() => setShowInvite(true)}>Tenho um código de convite</button>}
         <Button type="submit" loading={busy}>Criar conta</Button>

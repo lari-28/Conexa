@@ -5,6 +5,9 @@ import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { RegisterChoicePage } from '../pages/RegisterChoicePage';
 import { HomePage } from '../pages/HomePage';
+import { InvitePage } from '../pages/InvitePage';
+import { OrganizerInvitesPage } from '../pages/organizer/OrganizerInvitesPage';
+import { OrganizerImportPage } from '../pages/organizer/OrganizerImportPage';
 import { EventPage } from '../pages/EventPage';
 import { ParticipantsPage } from '../pages/ParticipantsPage';
 import { ParticipantDetailPage } from '../pages/ParticipantDetailPage';
@@ -26,6 +29,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
+      <Route path="/convite/:code" element={<InvitePage />} />
       <Route path="/cadastro" element={<RegisterChoicePage />} />
       <Route path="/cadastro/:tipo" element={<RegisterPage />} />
 
@@ -45,6 +49,8 @@ export function AppRoutes() {
             <Route path="/organizador/evento" element={<OrganizerEventPage />} />
             <Route path="/organizador/participantes" element={<OrganizerMembersPage />} />
             <Route path="/organizador/taxonomia" element={<OrganizerTaxonomyPage />} />
+            <Route path="/organizador/convites" element={<OrganizerInvitesPage />} />
+            <Route path="/organizador/importacao" element={<OrganizerImportPage />} />
             <Route path="/organizador/moderacao" element={<OrganizerModerationPage />} />
           </Route>
 

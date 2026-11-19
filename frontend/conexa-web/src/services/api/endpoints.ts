@@ -4,7 +4,7 @@ import type {
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
   LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
-  BoothMatchesResponse, LeadMatchesResponse,
+  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview,
 } from '../../types';
 
 export const authApi = {
@@ -148,4 +148,17 @@ export const matchingApi = {
   booths: (eventId: string, limit = 10) => api.get<BoothMatchesResponse>(`/api/events/${eventId}/matches/booths`, { limit }),
   leads: (eventId: string, companyId: string, limit = 20) =>
     api.get<LeadMatchesResponse>(`/api/events/${eventId}/companies/${companyId}/leads`, { limit }),
+};
+
+export const invitesApi = {
+  preview: (code: string) => api.get<InvitePreview>(`/api/invites/${encodeURIComponent(code)}`),
+  list: (eventId: string) => api.get<Invite[]>(`/api/organizer/events/${eventId}/invites`),
+  create: (eventId: string, data: { role: EventRole; maxUses: number | null; expiresInDays: number | null }) =>
+    api.post<Invite>(`/api/organizer/events/${eventId}/invites`, data),
+  revoke: (eventId: string, id: string) => api.delete<void>(`/api/organizer/events/${eventId}/invites/${id}`),
+};
+
+export const importApi = {
+  exhibitors: (eventId: string, csv: string, commit: boolean) =>
+    api.post<ImportReport>(`/api/organizer/events/${eventId}/exhibitors/import`, { csv, commit }),
 };

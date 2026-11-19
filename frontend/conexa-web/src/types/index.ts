@@ -216,6 +216,17 @@ export interface VisitorProfile {
   updatedAt: string | null;
 }
 
+export interface Invite {
+  id: string; code: string; role: EventRole; maxUses: number | null; uses: number;
+  expiresAt: string | null; revokedAt: string | null; valid: boolean; createdAt: string;
+}
+export interface InvitePreview { valid: boolean; reason: string | null; eventName: string | null; role: EventRole | null }
+export interface ImportRow { line: number; name: string; status: 'Created' | 'Skipped' | 'Invalid'; messages: string[] }
+export interface ImportReport {
+  committed: boolean; total: number; created: number; skipped: number; invalid: number;
+  rows: ImportRow[]; fileErrors: string[]; newThemeSuggestions: string[];
+}
+
 export type MatchBand = 'None' | 'Low' | 'Medium' | 'High';
 export interface BoothMatch {
   companyId: string; name: string; segment: string | null; boothLocation: string | null;
