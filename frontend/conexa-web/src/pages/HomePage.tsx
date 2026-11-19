@@ -6,7 +6,7 @@ import { profileOrder, profiles } from '../content/profiles';
 const steps = [
   { n: 1, title: 'Cadastre-se', text: 'Visitante, expositor ou organizador: cada um informa o que busca e o que oferece.' },
   { n: 2, title: 'Explore o evento', text: 'Veja as pessoas e os estandes do evento e encontre quem tem interesses em comum.' },
-  { n: 3, title: 'Conecte-se', text: 'Recomendações por IA e relatório final do evento estão em desenvolvimento.', soon: true },
+  { n: 3, title: 'Conecte-se', text: 'Receba recomendações por afinidade, com o motivo de cada uma (versão inicial). O relatório final do evento está em desenvolvimento.' },
 ];
 
 export function HomePage() {
@@ -36,11 +36,11 @@ export function HomePage() {
           </div>
 
           <div className="example" aria-label="Exemplo ilustrativo">
-            <span className="ex-label">Exemplo ilustrativo · funcionalidade em desenvolvimento</span>
+            <span className="ex-label">Exemplo ilustrativo · dados fictícios</span>
             <p style={{ margin: 0 }}><strong>Objetivo do visitante:</strong> “Quero automatizar o controle de produção da minha fábrica.”</p>
             <div className="example-item"><span>Estande B-06 · Sistemas de gestão</span><span className="badge badge-match">Afinidade alta</span></div>
             <div className="example-item"><span>Estande C-12 · Sensores industriais</span><span className="badge badge-match">Afinidade média</span></div>
-            <small className="muted">Dados fictícios, apenas para mostrar a ideia.</small>
+            <small className="muted">Apenas para mostrar a ideia. As recomendações reais dependem do que cada pessoa informar.</small>
           </div>
         </section>
 

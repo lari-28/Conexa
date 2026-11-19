@@ -3,6 +3,7 @@ import { useCurrentEvent, useEvent } from '../features/events/EventContext';
 import { Badge, Card } from '../components/ui';
 import { PageHeader } from '../components/common';
 import { profileByRole } from '../content/profiles';
+import { BoothMatchesBlock, LeadsBlock } from '../features/matching/MatchBlocks';
 import { formatDateTime, roleLabel } from '../utils/format';
 
 export function EventPage() {
@@ -29,11 +30,14 @@ export function EventPage() {
         <div><Link className="btn btn-primary" to={profile.nextPath}>Continuar</Link></div>
       </Card>
 
-      <div className="ai-block">
-        <span className="ai-tag">Em breve</span>
-        <h3>{profile.aiSoon.title}</h3>
-        <p className="muted" style={{ margin: 0 }}>{profile.aiSoon.text}</p>
-      </div>
+      {roleInEvent === 'Exhibitor' ? <LeadsBlock eventId={ev.id} />
+        : roleInEvent === 'Organizer' ? (
+          <div className="ai-block">
+            <span className="ai-tag">Em breve</span>
+            <h3>{profile.aiSoon.title}</h3>
+            <p className="muted" style={{ margin: 0 }}>{profile.aiSoon.text}</p>
+          </div>
+        ) : <BoothMatchesBlock eventId={ev.id} />}
 
       <div className="grid">
         {shortcuts.map((s) => (

@@ -4,6 +4,7 @@ import type {
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
   LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
+  BoothMatchesResponse, LeadMatchesResponse,
 } from '../../types';
 
 export const authApi = {
@@ -141,4 +142,10 @@ export const adminApi = {
   users: (q?: string, page?: number) => api.get<Paged<AdminUser>>('/api/admin/users', { q, page }),
   setActive: (id: string, isActive: boolean) => api.patch<void>(`/api/admin/users/${id}`, { isActive }),
   addOrganizer: (eventId: string, email: string) => api.post<void>(`/api/admin/events/${eventId}/organizers`, { email }),
+};
+
+export const matchingApi = {
+  booths: (eventId: string, limit = 10) => api.get<BoothMatchesResponse>(`/api/events/${eventId}/matches/booths`, { limit }),
+  leads: (eventId: string, companyId: string, limit = 20) =>
+    api.get<LeadMatchesResponse>(`/api/events/${eventId}/companies/${companyId}/leads`, { limit }),
 };

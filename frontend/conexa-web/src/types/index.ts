@@ -215,3 +215,15 @@ export interface VisitorProfile {
   readyForMatching: boolean;
   updatedAt: string | null;
 }
+
+export type MatchBand = 'None' | 'Low' | 'Medium' | 'High';
+export interface BoothMatch {
+  companyId: string; name: string; segment: string | null; boothLocation: string | null;
+  score: number; band: MatchBand; reasons: string[];
+}
+export interface BoothMatchesResponse { ready: boolean; message: string | null; items: BoothMatch[] }
+export interface LeadMatch {
+  userId: string; displayName: string; companyName: string | null; jobTitle: string | null; goal: string | null;
+  score: number; band: MatchBand; reasons: string[]; email: string | null; phone: string | null;
+}
+export interface LeadMatchesResponse { items: LeadMatch[]; consentingVisitors: number }
