@@ -62,7 +62,7 @@ export function HomePage() {
           <div className="grid">
             {steps.map((s) => (
               <div key={s.n} className="card">
-                <div className="row"><span className="step-n">{s.n}</span><h3>{s.title}</h3>{s.soon && <span className="ai-tag">Em breve</span>}</div>
+                <div className="row"><span className="step-n">{s.n}</span><h3>{s.title}</h3></div>
                 <p className="muted" style={{ margin: 0 }}>{s.text}</p>
               </div>
             ))}
