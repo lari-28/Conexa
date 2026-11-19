@@ -243,3 +243,21 @@ export interface AppNotification {
   id: string; eventId: string; title: string; body: string; link: string | null; createdAt: string; read: boolean;
 }
 export interface CheckInResult { companyId: string; companyName: string; alreadyRecorded: boolean }
+
+export interface ThemeInsight { tagId: string; name: string; area: string | null; demand: number; supply: number }
+export interface EventInsights {
+  totals: {
+    visitorsWithProfile: number; consentedMatching: number; consentedSharing: number; booths: number; boothsWithThemes: number;
+    checkIns: number; checkedInVisitors: number; feedbackUseful: number; feedbackNotUseful: number; usefulRate: number | null;
+  };
+  themes: ThemeInsight[];
+  gaps: ThemeInsight[];
+  exposure: { boothsRecommended: number; boothsNeverRecommended: number; gini: number; top20Share: number; mostRecommended: string | null; mostRecommendedCount: number };
+  profileGroups: { area: string; visitors: number; topThemes: string[] }[];
+  topTerms: { term: string; count: number }[];
+  notes: string[];
+}
+export interface BoothMetrics {
+  companyId: string; name: string; boothLocation: string | null; checkIns: number; checkedInVisitors: number;
+  recommendedTo: number; highAffinity: number; feedbackUseful: number; feedbackNotUseful: number; leadsAvailable: number;
+}

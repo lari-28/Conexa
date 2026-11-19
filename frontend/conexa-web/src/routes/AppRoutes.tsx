@@ -6,6 +6,7 @@ import { RegisterPage } from '../pages/RegisterPage';
 import { RegisterChoicePage } from '../pages/RegisterChoicePage';
 import { HomePage } from '../pages/HomePage';
 import { InvitePage } from '../pages/InvitePage';
+import { OrganizerDashboardPage } from '../pages/organizer/OrganizerDashboardPage';
 import { NotificationsPage } from '../pages/NotificationsPage';
 import { CheckInPage } from '../pages/CheckInPage';
 import { OrganizerInvitesPage } from '../pages/organizer/OrganizerInvitesPage';
@@ -52,6 +53,7 @@ export function AppRoutes() {
           <Route element={<ProtectedRoute roles={['Organizer', 'PlatformAdmin']} />}>
             <Route path="/organizador/evento" element={<OrganizerEventPage />} />
             <Route path="/organizador/participantes" element={<OrganizerMembersPage />} />
+            <Route path="/organizador/painel" element={<OrganizerDashboardPage />} />
             <Route path="/organizador/taxonomia" element={<OrganizerTaxonomyPage />} />
             <Route path="/organizador/convites" element={<OrganizerInvitesPage />} />
             <Route path="/organizador/importacao" element={<OrganizerImportPage />} />

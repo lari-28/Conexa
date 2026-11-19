@@ -33,9 +33,10 @@ export function EventPage() {
       {roleInEvent === 'Exhibitor' ? <LeadsBlock eventId={ev.id} />
         : roleInEvent === 'Organizer' ? (
           <div className="ai-block">
-            <span className="ai-tag">Em breve</span>
-            <h3>{profile.aiSoon.title}</h3>
-            <p className="muted" style={{ margin: 0 }}>{profile.aiSoon.text}</p>
+            <span className="ai-tag">Painel</span>
+            <h3>Resumo do evento</h3>
+            <p className="muted" style={{ margin: 0 }}>Demanda x oferta por tema, lacunas, concentração de exposição e check-ins.</p>
+            <div><Link className="btn btn-primary" to="/organizador/painel">Abrir painel</Link></div>
           </div>
         ) : <BoothMatchesBlock eventId={ev.id} />}
 

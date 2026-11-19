@@ -4,7 +4,7 @@ import type {
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
   LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
-  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview, AppNotification, CheckInResult,
+  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview, AppNotification, CheckInResult, EventInsights, BoothMetrics,
 } from '../../types';
 
 export const authApi = {
@@ -176,4 +176,12 @@ export const notificationsApi = {
 export const importApi = {
   exhibitors: (eventId: string, csv: string, commit: boolean) =>
     api.post<ImportReport>(`/api/organizer/events/${eventId}/exhibitors/import`, { csv, commit }),
+};
+
+export const insightsApi = {
+  event: (eventId: string) => api.get<EventInsights>(`/api/organizer/events/${eventId}/insights`),
+  booth: (eventId: string, companyId: string) => api.get<BoothMetrics>(`/api/events/${eventId}/companies/${companyId}/report`),
+  exportBooths: (eventId: string) => api.download(`/api/organizer/events/${eventId}/export/booths.csv`, 'estandes.csv'),
+  exportThemes: (eventId: string) => api.download(`/api/organizer/events/${eventId}/export/themes.csv`, 'temas.csv'),
+  exportLeads: (eventId: string, companyId: string) => api.download(`/api/events/${eventId}/companies/${companyId}/leads.csv`, 'leads.csv'),
 };

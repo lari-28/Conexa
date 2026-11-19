@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { companiesApi, engagementApi, matchingApi } from '../../services/api/endpoints';
+import { companiesApi, engagementApi, insightsApi, matchingApi } from '../../services/api/endpoints';
 import { useAsync } from '../../hooks/useAsync';
 import { Alert, Avatar, Loading } from '../../components/ui';
 import type { MatchBand } from '../../types';
@@ -65,7 +65,8 @@ export function LeadsBlock({ eventId }: { eventId: string }) {
   const { data, loading, error } = useAsync(async () => {
     const mine = await companiesApi.mine(eventId);
     if (!mine[0]) return null;
-    return { company: mine[0], leads: await matchingApi.leads(eventId, mine[0].id) };
+    const [leads, report] = await Promise.all([matchingApi.leads(eventId, mine[0].id), insightsApi.booth(eventId, mine[0].id)]);
+    return { company: mine[0], leads, report };
   }, [eventId]);
 
   return (
@@ -79,6 +80,12 @@ export function LeadsBlock({ eventId }: { eventId: string }) {
           <p className="muted" style={{ margin: 0 }}>Cadastre seu estande para ver os visitantes com afinidade.</p>
           <div><Link className="btn btn-primary" to="/evento/meu-estande">Cadastrar estande</Link></div>
         </>
+      )}
+      {data && (
+        <p className="small muted" style={{ margin: 0 }}>
+          Seu estande: {data.report.checkIns} check-in(s) por QR · recomendado a {data.report.recommendedTo} visitante(s)
+          ({data.report.highAffinity} com afinidade alta) · {data.report.feedbackUseful} útil / {data.report.feedbackNotUseful} não útil.
+        </p>
       )}
       {data && data.leads.items.length === 0 && (
         <p className="muted" style={{ margin: 0 }}>
@@ -99,7 +106,12 @@ export function LeadsBlock({ eventId }: { eventId: string }) {
           <Band band={l.band} />
         </div>
       ))}
-      {data && data.leads.items.length > 0 && <small className="muted">{note}</small>}
+      {data && data.leads.items.length > 0 && (
+        <div className="row wrap">
+          <button type="button" className="btn" onClick={() => insightsApi.exportLeads(eventId, data.company.id).catch(() => undefined)}>Exportar leads (CSV)</button>
+          <small className="muted">{note}</small>
+        </div>
+      )}
     </div>
   );
 }

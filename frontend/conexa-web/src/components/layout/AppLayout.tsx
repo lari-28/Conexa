@@ -43,6 +43,7 @@ export function AppLayout() {
     ...(hasRole('Organizer', 'PlatformAdmin') ? [
       { to: '/organizador/evento', label: 'Organizador · Evento' },
       { to: '/organizador/participantes', label: 'Organizador · Participantes' },
+      { to: '/organizador/painel', label: 'Organizador · Painel do evento' },
       { to: '/organizador/taxonomia', label: 'Organizador · Taxonomia' },
       { to: '/organizador/importacao', label: 'Organizador · Importar expositores' },
       { to: '/organizador/convites', label: 'Organizador · Convites' },
