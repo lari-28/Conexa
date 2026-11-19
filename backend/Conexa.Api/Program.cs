@@ -73,6 +73,7 @@ builder.Services.AddScoped<IAuthorizationHandler, EventAccessHandler>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<MatchingService>();
 builder.Services.AddScoped<MatchNotifier>();
+builder.Services.AddScoped<InsightsService>();
 builder.Services.AddScoped<ExhibitorImportService>();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(Policies.EventMember, p => p.RequireAuthenticatedUser().AddRequirements(new EventAccessRequirement(false)))

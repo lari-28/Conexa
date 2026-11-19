@@ -114,3 +114,16 @@ Cada estande tem um código de QR (gerado na primeira consulta). O visitante lê
 | POST | `/api/notifications/{id}/read` · `/read-all` | próprio usuário |
 
 Avisos gerados ao salvar o perfil do visitante: ao próprio visitante ("Estandes para você", uma vez) e, **só se ele consentiu o compartilhamento**, ao representante de cada estande com afinidade alta. Ao revogar o compartilhamento, os avisos com o nome do visitante são apagados.
+
+## Painéis e exportação (Etapa 6)
+
+Só agregados: nenhuma lista de pessoas sai dos painéis. Consideram apenas visitantes que consentiram o matching. Exportações em CSV (separador `;`, UTF-8 com BOM, células que começam com `=`, `+`, `-` ou `@` são neutralizadas contra injeção de fórmula); abra no Excel. **XLSX, PDF e relatório com IA ainda não existem** (o PDF sai pela impressão do navegador).
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/organizer/events/{eventId}/insights` | organizador / admin |
+| GET | `/api/organizer/events/{eventId}/export/booths.csv` · `/themes.csv` | organizador / admin |
+| GET | `/api/events/{eventId}/companies/{companyId}/report` | organizador ou representante |
+| GET | `/api/events/{eventId}/companies/{companyId}/leads.csv` | organizador ou representante (mesmas regras de consentimento dos leads) |
+
+O painel traz: totais (visitantes, consentimentos, check-ins, "foi útil?"), demanda x oferta por tema e as lacunas (demanda sem nenhum estande), concentração de exposição entre estandes (Gini e fatia dos 20% mais recomendados), perfis por área de atuação e termos mais pedidos nos objetivos. Com menos de 10 visitantes o painel avisa que os números são indicativos.

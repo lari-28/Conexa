@@ -11,3 +11,4 @@ global using Conexa.Api.Domain.Entities;
 global using Conexa.Api.Domain.Enums;
 global using Conexa.Api.Services;
 global using Conexa.Api.Services.Matching;
+global using Conexa.Api.Services.Insights;
