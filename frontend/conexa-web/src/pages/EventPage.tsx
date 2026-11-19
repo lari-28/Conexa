@@ -26,7 +26,7 @@ export function EventPage() {
       <Card>
         <h3>Próximo passo</h3>
         <p className="muted" style={{ margin: 0 }}>{profile.nextStep}</p>
-        <div><Link className="btn btn-primary" to={roleInEvent === 'Organizer' ? '/organizador/evento' : '/perfil'}>Continuar</Link></div>
+        <div><Link className="btn btn-primary" to={profile.nextPath}>Continuar</Link></div>
       </Card>
 
       <div className="ai-block">

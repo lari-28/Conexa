@@ -28,6 +28,7 @@ export function AppLayout() {
     ...(hasRole('Organizer', 'PlatformAdmin') ? [
       { to: '/organizador/evento', label: 'Organizador · Evento' },
       { to: '/organizador/participantes', label: 'Organizador · Participantes' },
+      { to: '/organizador/taxonomia', label: 'Organizador · Taxonomia' },
       { to: '/organizador/moderacao', label: 'Organizador · Moderação' },
     ] : []),
     ...(hasRole('PlatformAdmin') ? [

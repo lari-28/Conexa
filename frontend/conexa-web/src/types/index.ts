@@ -122,6 +122,8 @@ export interface CompanyDetail {
   boothLocation: string | null;
   website: string | null;
   representatives: Representative[];
+  idealCustomer: string | null;
+  tags: Tag[];
 }
 
 export interface Author {
@@ -177,4 +179,39 @@ export interface AdminUser {
   isActive: boolean;
   roles: string[];
   createdAt: string;
+}
+
+export type TagStatus = 'Suggested' | 'Approved' | 'Rejected';
+export interface Tag {
+  id: string;
+  parentId: string | null;
+  name: string;
+  description: string | null;
+  synonyms: string[];
+  status: TagStatus;
+  libraryKey: string | null;
+}
+export interface SuggestionGroup {
+  key: string;
+  name: string;
+  items: Tag[];
+  matchesTagId: string | null;
+  matchesTagName: string | null;
+}
+export interface LibrarySector { key: string; name: string; macroAreas: number; themes: number }
+export interface ReviewResult { approved: number; rejected: number; merged: number }
+
+export type VisitTimeframe = 'Exploring' | 'ThisQuarter' | 'ThisMonth' | 'Now';
+export interface VisitorProfile {
+  eventId: string;
+  goal: string | null;
+  timeframe: VisitTimeframe | null;
+  tags: Tag[];
+  consents: {
+    matching: boolean; matchingAt: string | null;
+    shareWithExhibitors: boolean; shareWithExhibitorsAt: string | null;
+    externalAi: boolean; externalAiAt: string | null;
+  };
+  readyForMatching: boolean;
+  updatedAt: string | null;
 }

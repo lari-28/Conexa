@@ -15,6 +15,9 @@ import { ProfilePage } from '../pages/ProfilePage';
 import { OrganizerEventPage } from '../pages/organizer/OrganizerEventPage';
 import { OrganizerMembersPage } from '../pages/organizer/OrganizerMembersPage';
 import { OrganizerModerationPage } from '../pages/organizer/OrganizerModerationPage';
+import { OrganizerTaxonomyPage } from '../pages/organizer/OrganizerTaxonomyPage';
+import { VisitorProfilePage } from '../pages/VisitorProfilePage';
+import { ExhibitorBoothPage } from '../pages/ExhibitorBoothPage';
 import { AdminEventsPage } from '../pages/admin/AdminEventsPage';
 import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
 
@@ -31,6 +34,8 @@ export function AppRoutes() {
           <Route path="/evento" element={<EventPage />} />
           <Route path="/participantes" element={<ParticipantsPage />} />
           <Route path="/participantes/:id" element={<ParticipantDetailPage />} />
+          <Route path="/evento/meu-perfil" element={<VisitorProfilePage />} />
+          <Route path="/evento/meu-estande" element={<ExhibitorBoothPage />} />
           <Route path="/empresas" element={<CompaniesPage />} />
           <Route path="/empresas/:id" element={<CompanyDetailPage />} />
           <Route path="/forum" element={<ForumPage />} />
@@ -39,6 +44,7 @@ export function AppRoutes() {
           <Route element={<ProtectedRoute roles={['Organizer', 'PlatformAdmin']} />}>
             <Route path="/organizador/evento" element={<OrganizerEventPage />} />
             <Route path="/organizador/participantes" element={<OrganizerMembersPage />} />
+            <Route path="/organizador/taxonomia" element={<OrganizerTaxonomyPage />} />
             <Route path="/organizador/moderacao" element={<OrganizerModerationPage />} />
           </Route>
 
