@@ -102,7 +102,7 @@ blockquote { margin: .5rem 0; padding: .65rem .85rem; background: var(--indigo-s
 }
 
 /* Shared components */
-.page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.page-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; }
 .card { display: flex; padding: 1rem; flex-direction: column; gap: .5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .card-click { cursor: pointer; transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease; }
 .card-click:hover { border-color: var(--indigo); box-shadow: 0 4px 16px rgba(49, 46, 129, .1); }

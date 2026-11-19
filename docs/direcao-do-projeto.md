@@ -85,3 +85,40 @@ Fumaça real (PostgreSQL, banco descartável): migrations aplicam; importação 
 - Chave de API de um LLM (item 6).
 - Parecer jurídico sobre consentimento, compartilhamento de leads e envio a LLM.
 - Monetização (afeta só a página do organizador).
+
+---
+
+## 8. Atualização (19/11/2026, fim do trabalho autônomo) — o que falta depende de você
+
+### Concluído (itens 1 a 5 do roteiro, mais as bases do 4 e do 5)
+
+| Item | Entrega | Verificação |
+| --- | --- | --- |
+| Matching v1 | Motor híbrido (tema + texto + público-alvo), `MatchScore`, estandes recomendados e leads, com motivos | 116 testes; fumaça real |
+| Cadastro em massa | Importação de expositores por CSV (prévia + confirmação) e convites por link | testes; fumaça real |
+| Demonstração | Seed aditivo: taxonomia, estandes, 5 visitantes com consentimentos variados | fumaça real |
+| Interações e avisos | Check-in por QR, "isso foi útil?", avisos no app (com apagamento ao revogar consentimento) | testes; fumaça real |
+| Insights | Painel (lacunas, demanda x oferta, concentração de exposição, perfis, termos), relatório do estande, CSV | testes; fumaça real |
+
+`node scripts/smoke-e2e.mjs` (57 verificações) roda contra uma API local com `Seed:DemoData=true` e um **banco descartável**; a última execução passou inteira em PostgreSQL real. No navegador foram vistas, com a API real, a página do evento do visitante e o painel do organizador (em tela de celular); **as demais telas só passaram no build**.
+
+Para ver tudo no seu ambiente: pare a API, rode `dotnet ef database update` (migrations `Etapa2Taxonomia`, `Etapa3Matching`, `Etapa4ConvitesImportacao`, `Etapa5CheckinAvisos`) e inicie de novo. O seed é aditivo e cria os dados de demonstração novos no banco existente.
+
+### O que NÃO foi feito e por quê
+
+| Pendência | Bloqueio |
+| --- | --- |
+| Validar/calibrar pesos e limiares do matching | **Feira-piloto ou catálogo real** e rotulagem por pessoas independentes. Os números atuais são hipótese (teste sintético de autor único). |
+| Camada de LLM (sugerir temas por site/catálogo, explicações, relatório final com IA) | **Chave de API** e teste de provedores; **parecer jurídico** sobre envio de dados a terceiros. O consentimento "IA externa" já existe no modelo, mas nada é enviado. |
+| Aviso por e-mail e WhatsApp | **Provedor de envio** (SMTP ou serviço) e texto de consentimento próprio, revisado juridicamente. Hoje só há aviso no app. |
+| LGPD (bases legais, textos de consentimento, retenção, direitos do titular, DPO) | **Parecer jurídico.** Os consentimentos por finalidade e a regra de apagar avisos ao revogar existem, mas os textos não foram revisados. |
+| Monetização e formulário comercial do organizador | **Decisão de negócio.** |
+| Piloto, produção, observabilidade, backup, HTTPS | **Feira-piloto e ambiente de hospedagem.** |
+| Exportação XLSX e PDF do servidor | Só CSV e impressão do navegador; fica para quando houver necessidade confirmada. |
+
+### Limites conhecidos (não resolvidos)
+
+- Fonte IBM Plex Sans não é carregada localmente; a rota `/empresas` ainda não foi renomeada para `/estandes`.
+- Não há testes automatizados de frontend; o backend é testado com banco em memória e com a fumaça acima.
+- Faixa "alta" do matching exige sinal de tema além do texto (texto sozinho tende a ficar em "média"); é consequência dos pesos atuais e deve ser reavaliada com dados reais.
+- Cobertura de leads depende de o visitante ter salvo o perfil (os scores são calculados ao consultar e ao salvar).
