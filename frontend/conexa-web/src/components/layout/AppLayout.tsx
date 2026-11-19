@@ -4,12 +4,17 @@ import { useAuth } from '../../features/auth/AuthContext';
 import { useEvent } from '../../features/events/EventContext';
 import { Alert, Avatar, EmptyState, Loading } from '../ui';
 
+const svg = (d: string) => (
+  <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d={d} />
+  </svg>
+);
+
 const mainLinks = [
-  { to: '/evento', label: 'Evento', icon: '🏠' },
-  { to: '/participantes', label: 'Pessoas', icon: '👥' },
-  { to: '/empresas', label: 'Empresas', icon: '🏢' },
-  { to: '/forum', label: 'Fórum', icon: '💬' },
-  { to: '/perfil', label: 'Perfil', icon: '🙂' },
+  { to: '/evento', label: 'Início', icon: svg('M3 11l9-8 9 8M5 10v10h14V10') },
+  { to: '/empresas', label: 'Estandes', icon: svg('M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6') },
+  { to: '/participantes', label: 'Pessoas', icon: svg('M16 20v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM20 20v-2a3 3 0 00-2.5-3M15.5 3.2a3.5 3.5 0 010 6.6') },
+  { to: '/perfil', label: 'Perfil', icon: svg('M20 21a8 8 0 10-16 0M12 12a4.5 4.5 0 100-9 4.5 4.5 0 000 9z') },
 ];
 
 export function AppLayout() {
@@ -44,7 +49,7 @@ export function AppLayout() {
             </select>
           ) : <span className="event-name">{current?.name ?? ''}</span>}
           <nav className="top-nav" aria-label="Principal">
-            {mainLinks.map((l) => <NavLink key={l.to} to={l.to}>{l.label}</NavLink>)}
+            {mainLinks.map((l) => <NavLink key={l.to} to={l.to}>{l.icon}{l.label}</NavLink>)}
           </nav>
           <button className="user-btn" onClick={() => setMenu((m) => !m)} aria-label="Menu do usuário" aria-expanded={menu}>
             <Avatar name={user.displayName} url={user.photoUrl} size={32} />
@@ -54,6 +59,7 @@ export function AppLayout() {
           <div className="drawer" role="menu">
             <p className="muted">{user.displayName}<br /><small>{user.email}</small></p>
             {extra.map((l) => <button key={l.to} className="drawer-link" onClick={() => go(l.to)}>{l.label}</button>)}
+            <button className="drawer-link" onClick={() => go('/forum')}>Comunidade</button>
             <button className="drawer-link" onClick={() => go('/perfil')}>Meu perfil e privacidade</button>
             <button className="drawer-link danger" onClick={() => { setMenu(false); void logout().then(() => navigate('/login')); }}>Sair</button>
           </div>
@@ -71,7 +77,7 @@ export function AppLayout() {
 
       <nav className="bottom-nav" aria-label="Principal (celular)">
         {mainLinks.map((l) => (
-          <NavLink key={l.to} to={l.to}><span aria-hidden>{l.icon}</span><small>{l.label}</small></NavLink>
+          <NavLink key={l.to} to={l.to}>{l.icon}<small>{l.label}</small></NavLink>
         ))}
       </nav>
     </div>

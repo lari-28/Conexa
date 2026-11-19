@@ -3,6 +3,8 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
+import { RegisterChoicePage } from '../pages/RegisterChoicePage';
+import { HomePage } from '../pages/HomePage';
 import { EventPage } from '../pages/EventPage';
 import { ParticipantsPage } from '../pages/ParticipantsPage';
 import { ParticipantDetailPage } from '../pages/ParticipantDetailPage';
@@ -20,7 +22,9 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/cadastro" element={<RegisterPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/cadastro" element={<RegisterChoicePage />} />
+      <Route path="/cadastro/:tipo" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
@@ -45,7 +49,7 @@ export function AppRoutes() {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/evento" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
