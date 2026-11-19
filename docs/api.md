@@ -100,3 +100,17 @@ Os scores ficam em `MatchScores` (decomposição + motivos).
 | Método | Rota | Acesso |
 | --- | --- | --- |
 | POST | `/api/organizer/events/{eventId}/exhibitors/import` (`{ csv, commit }`) | organizador / admin (`commit=false` só valida) |
+
+## Check-in por QR, feedback e avisos (Etapa 4)
+
+Cada estande tem um código de QR (gerado na primeira consulta). O visitante lê o QR no estande e o check-in registra a visita (repetir em até 30 min não duplica). "Isso foi útil?" vale só para estandes que foram recomendados ao usuário, com no máximo uma resposta por estande. Os avisos ficam dentro do app; **e-mail e WhatsApp ainda não são enviados** (dependem de provedor e de consentimento próprio).
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/events/{eventId}/companies/{companyId}/checkin-code` | organizador ou representante |
+| POST | `/api/events/{eventId}/checkins` (`{ code }`) | membro |
+| POST | `/api/events/{eventId}/matches/feedback` (`{ companyId, useful }`) | membro |
+| GET | `/api/notifications?unreadOnly=&limit=` · `/count` | próprio usuário |
+| POST | `/api/notifications/{id}/read` · `/read-all` | próprio usuário |
+
+Avisos gerados ao salvar o perfil do visitante: ao próprio visitante ("Estandes para você", uma vez) e, **só se ele consentiu o compartilhamento**, ao representante de cada estande com afinidade alta. Ao revogar o compartilhamento, os avisos com o nome do visitante são apagados.

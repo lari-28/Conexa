@@ -76,6 +76,8 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
         b.Property(x => x.BoothLocation).HasMaxLength(100);
         b.Property(x => x.Website).HasMaxLength(300);
         b.Property(x => x.IdealCustomer).HasMaxLength(1000);
+        b.Property(x => x.CheckInCode).HasMaxLength(40);
+        b.HasIndex(x => x.CheckInCode).IsUnique();
         b.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId);
         b.HasIndex(x => x.EventId);
     }
@@ -219,5 +221,30 @@ public class EventInviteConfiguration : IEntityTypeConfiguration<EventInvite>
         b.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId);
         b.HasIndex(x => x.Code).IsUnique();
         b.HasIndex(x => x.EventId);
+    }
+}
+
+public class InteractionConfiguration : IEntityTypeConfiguration<Interaction>
+{
+    public void Configure(EntityTypeBuilder<Interaction> b)
+    {
+        b.Property(x => x.Type).HasConversion<string>().HasMaxLength(30);
+        b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId).OnDelete(DeleteBehavior.Cascade);
+        b.HasIndex(x => new { x.EventId, x.CompanyId, x.Type });
+        b.HasIndex(x => new { x.EventId, x.UserId, x.CompanyId, x.Type });
+    }
+}
+
+public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
+{
+    public void Configure(EntityTypeBuilder<Notification> b)
+    {
+        b.Property(x => x.DedupeKey).HasMaxLength(200).IsRequired();
+        b.Property(x => x.Title).HasMaxLength(150).IsRequired();
+        b.Property(x => x.Body).HasMaxLength(500).IsRequired();
+        b.Property(x => x.Link).HasMaxLength(200);
+        b.HasIndex(x => new { x.UserId, x.DedupeKey }).IsUnique();
+        b.HasIndex(x => new { x.UserId, x.ReadAt });
     }
 }

@@ -2,7 +2,7 @@ namespace Conexa.Api.Controllers;
 
 /// <summary>Perfil do próprio usuário dentro de um evento: objetivo, temas e consentimentos por finalidade.</summary>
 [Route("api/events/{eventId:guid}/my-profile"), Authorize(Policy = Policies.EventMember)]
-public class VisitorProfileController(ApplicationDbContext db) : ApiControllerBase
+public class VisitorProfileController(ApplicationDbContext db, MatchNotifier notifier, ILogger<VisitorProfileController> log) : ApiControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<VisitorProfileResponse>> Get(Guid eventId, CancellationToken ct)
@@ -48,6 +48,11 @@ public class VisitorProfileController(ApplicationDbContext db) : ApiControllerBa
             p.Tags.Add(new ParticipantTag { EventId = eventId, UserId = uid, TagId = t.Id, Tag = t });
 
         await db.SaveChangesAsync(ct);
+
+        // Avisos não podem derrubar o salvamento do perfil.
+        try { await notifier.AfterProfileSavedAsync(eventId, uid, ct); }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        { log.LogWarning(ex, "Falha ao gerar avisos de matching para o evento {EventId}", eventId); }
         return ToResponse(p);
     }
 

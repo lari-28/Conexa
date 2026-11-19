@@ -1,3 +1,4 @@
+using Conexa.Api.Services.Matching;
 using Conexa.Api.Contracts.Requests;
 using Conexa.Api.Contracts.Responses;
 using Conexa.Api.Controllers;
@@ -85,7 +86,7 @@ public class VisitorProfileTests
         new(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
 
     private static VisitorProfileController Controller(ApplicationDbContext db, Guid userId) =>
-        new(db) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext
+        new(db, new MatchNotifier(db, new MatchingService(db)), Microsoft.Extensions.Logging.Abstractions.NullLogger<VisitorProfileController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext
         { User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId.ToString())], "t")) } } };
 
     private static T Value<T>(ActionResult<T> r) => r.Value ?? (T)((ObjectResult)r.Result!).Value!;
