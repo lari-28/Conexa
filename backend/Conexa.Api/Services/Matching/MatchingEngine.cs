@@ -128,8 +128,13 @@ public class MatchingEngine
 
         if (!string.IsNullOrWhiteSpace(v.Goal))
         {
+            // mostra as palavras como o visitante as escreveu (com acento), comparando sem acento
+            var original = new Dictionary<string, string>();
+            foreach (var raw in Regex.Split(v.Goal, @"[^\p{L}\p{N}]+").Where(w => w.Length > 0))
+                original.TryAdd(TaxonomyRules.Key(raw), raw.ToLowerInvariant());
             var words = Tokens(v.Goal).Where(w => w.Length >= 4 && !Stop.Contains(w))
-                .Distinct().Where(_boothWords[b.CompanyId].Contains).Take(4).ToList();
+                .Distinct().Where(_boothWords[b.CompanyId].Contains).Take(4)
+                .Select(w => original.GetValueOrDefault(w, w)).ToList();
             if (words.Count > 0) reasons.Add($"Termos em comum com o seu objetivo: {string.Join(", ", words)}.");
         }
         if (audience is >= 0.2 && !string.IsNullOrWhiteSpace(b.AudienceText))
