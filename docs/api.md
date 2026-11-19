@@ -84,3 +84,19 @@ Motor híbrido sem LLM: tema (chips, com crédito parcial para a mesma macro-ár
 | GET | `/api/events/{eventId}/companies/{companyId}/leads?limit=` | organizador ou representante; só visitantes que consentiram matching **e** compartilhamento; contato segue a privacidade do perfil |
 
 Os scores ficam em `MatchScores` (decomposição + motivos).
+
+## Convites por link e importação de expositores (Etapa 2)
+
+**Convites:** o organizador gera um link com papel (visitante ou expositor), limite de usos e validade opcionais. Quem se cadastra com o código (`inviteCode` no registro) entra no evento do convite com o papel definido; o uso é consumido de forma atômica. O código tem 128 bits aleatórios. A pré-visualização pública só revela nome do evento e papel.
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/invites/{code}` | público |
+| GET / POST | `/api/organizer/events/{eventId}/invites` | organizador / admin |
+| DELETE | `/api/organizer/events/{eventId}/invites/{inviteId}` | organizador / admin (cancela) |
+
+**Importação do catálogo (CSV):** aceita `;`, `,` ou tab, aspas e BOM; cabeçalhos com variações (nome/empresa, segmento, produtos, cliente ideal, estande, site, temas, e-mail). Excel: salve como CSV. Até 1000 linhas. Duplicados por nome (sem acento/caixa) são pulados; temas desconhecidos viram sugestões na fila de aprovação; o responsável é vinculado se já tiver conta.
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| POST | `/api/organizer/events/{eventId}/exhibitors/import` (`{ csv, commit }`) | organizador / admin (`commit=false` só valida) |

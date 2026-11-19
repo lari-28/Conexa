@@ -14,7 +14,13 @@ public class AuthController(
     {
         var opts = registration.Value;
         if (!opts.Open) return Problem(statusCode: 403, title: "O cadastro está fechado no momento.");
-        if (!string.IsNullOrWhiteSpace(opts.InviteCode) && req.InviteCode?.Trim() != opts.InviteCode)
+        // Convite por link de um evento vale como autorização e define o evento e o papel.
+        var code = req.InviteCode?.Trim();
+        var eventInvite = string.IsNullOrEmpty(code) ? null
+            : await db.EventInvites.FirstOrDefaultAsync(i => i.Code == code, ct);
+        if (eventInvite is not null && eventInvite.InvalidReason(DateTimeOffset.UtcNow) is { } invalid)
+            return Problem(statusCode: 403, title: invalid);
+        if (eventInvite is null && !string.IsNullOrWhiteSpace(opts.InviteCode) && code != opts.InviteCode)
             return Problem(statusCode: 403, title: "Código de convite inválido.");
 
         var email = req.Email.Trim();
@@ -24,19 +30,29 @@ public class AuthController(
         var user = new ApplicationUser { UserName = email, Email = email, DisplayName = req.Name.Trim() };
         await using var tx = await db.Database.BeginTransactionAsync(ct);
 
+        // Consome o uso do convite de forma atômica (sem corrida no limite de usos); a transação desfaz se o cadastro falhar.
+        if (eventInvite is not null)
+        {
+            var inviteId = eventInvite.Id;
+            var claimed = await db.EventInvites
+                .Where(i => i.Id == inviteId && i.RevokedAt == null && (i.MaxUses == null || i.Uses < i.MaxUses))
+                .ExecuteUpdateAsync(s => s.SetProperty(i => i.Uses, i => i.Uses + 1), ct);
+            if (claimed == 0) return Problem(statusCode: 403, title: "Este convite atingiu o limite de usos.");
+        }
+
         var created = await users.CreateAsync(user, req.Password);
         if (!created.Succeeded) return IdentityProblem(created);
 
         // Organizador/admin nunca são criados por cadastro público (RF01: conforme convite/autorização).
-        var exhibitor = req.AccountType == AccountType.Exhibitor;
+        var exhibitor = eventInvite is not null ? eventInvite.Role == EventRole.Exhibitor : req.AccountType == AccountType.Exhibitor;
         await users.AddToRoleAsync(user, exhibitor ? Roles.Exhibitor : Roles.Participant);
 
         db.UserProfiles.Add(new UserProfile { UserId = user.Id });
         db.ContactPrivacies.Add(new ContactPrivacy { UserId = user.Id }); // contatos ocultos por padrão
 
-        var activeEvent = await db.Events.Where(e => e.Status == EventStatus.Active)
-            .OrderBy(e => e.StartsAt).FirstOrDefaultAsync(ct);
-        if (activeEvent is not null)
+        var activeEvent = eventInvite is not null
+            ? await db.Events.FirstOrDefaultAsync(e => e.Id == eventInvite.EventId, ct)
+            : await db.Events.Where(e => e.Status == EventStatus.Active).OrderBy(e => e.StartsAt).FirstOrDefaultAsync(ct);        if (activeEvent is not null)
             db.EventMemberships.Add(new EventMembership
             {
                 EventId = activeEvent.Id, UserId = user.Id,

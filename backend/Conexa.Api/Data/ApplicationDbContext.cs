@@ -21,6 +21,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ParticipantEventProfile> ParticipantEventProfiles => Set<ParticipantEventProfile>();
     public DbSet<ParticipantTag> ParticipantTags => Set<ParticipantTag>();
     public DbSet<MatchScore> MatchScores => Set<MatchScore>();
+    public DbSet<EventInvite> EventInvites => Set<EventInvite>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

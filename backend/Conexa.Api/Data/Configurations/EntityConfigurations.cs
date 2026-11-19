@@ -209,3 +209,15 @@ public class MatchScoreConfiguration : IEntityTypeConfiguration<MatchScore>
         b.HasIndex(x => new { x.EventId, x.CompanyId, x.Score });
     }
 }
+
+public class EventInviteConfiguration : IEntityTypeConfiguration<EventInvite>
+{
+    public void Configure(EntityTypeBuilder<EventInvite> b)
+    {
+        b.Property(x => x.Code).HasMaxLength(40).IsRequired();
+        b.Property(x => x.Role).HasConversion<string>().HasMaxLength(20);
+        b.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId);
+        b.HasIndex(x => x.Code).IsUnique();
+        b.HasIndex(x => x.EventId);
+    }
+}
