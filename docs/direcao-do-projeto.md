@@ -51,3 +51,37 @@ Razões:
 - Números do avaliador são otimistas (mesmo autor para dados, taxonomia e gabarito). Comparações entre métodos valem; valores absolutos não.
 - A home só pode prometer o que já existe; matching e relatórios estão marcados "Em breve" até as etapas 3 e 6.
 - Medir com cátalogo e anotadores reais antes de fixar pesos ou limiar.
+
+---
+
+## 7. Atualização (19/11/2026) — estado e roteiro decidido
+
+### Feito (branch `feature/fase1-reposicionamento`)
+
+| Etapa | Entrega | Verificação |
+| --- | --- | --- |
+| 1 | Home pública, entrada por perfil, tema claro, "Em breve" no lugar da IA | build + navegador |
+| Base | 54 testes xUnit do backend | testes (banco em memória) |
+| 2 | Taxonomia por evento (API), biblioteca-base, fila de aprovação em lote, fusão | testes + chamadas reais ao PostgreSQL |
+| 2 | Perfil do visitante por evento (objetivo livre, temas, 3 consentimentos) | idem |
+| 2 | Perfil do estande (oferta, cliente ideal, até 3 temas) | idem |
+| 2 | Telas: `/evento/meu-perfil`, `/evento/meu-estande`, `/organizador/taxonomia` | build; **telas não percorridas no navegador com a API** |
+
+Fumaça real (PostgreSQL, banco descartável): migrations aplicam; importação da biblioteca é idempotente; sugestão de visitante cai na fila e só o organizador a vê; limite de 3 temas por estande devolve 400; perfil do visitante fica `readyForMatching`.
+
+### Roteiro (ordem decidida)
+
+1. **Matching v1** — motor híbrido em C# (tema + texto + público-alvo), `MatchScore` persistido com a decomposição, explicação por regras (sem LLM), limiar de "sem match", telas "Estandes para você" e "Leads para sua empresa". Pesos iniciais do avaliador (0,2 / 0,7 / 0,1) tratados como **hipótese**, não como valor validado. Só considera visitantes com consentimento de matching; leads só aparecem ao expositor se o visitante consentiu compartilhar.
+2. **Cadastro em massa** — importação de expositores por planilha e convites por link (hoje o expositor se cadastra sozinho ou o organizador cria o vínculo).
+3. **Dados de demonstração** — taxonomia, estandes e visitantes de exemplo no seed para demonstrar o fluxo completo sem preencher à mão.
+4. **Interações e avisos (Etapa 4)** — registro de ações, check-in por QR, aviso por e-mail e no app.
+5. **Insights e exportação (Etapa 6)** — painéis, CSV/XLSX/PDF, relatório final.
+6. **Camada de LLM (Etapa 5)** — interface `ILlmProvider`; sugestão de temas, explicações e relatório; só depois do teste com provedores reais e do parecer de LGPD.
+7. **Piloto e produção (Etapa 7)** — feira pequena, LGPD, observabilidade.
+
+### Dependências externas (não bloqueiam os itens 1 a 3)
+
+- Feira-piloto ou catálogo real (necessário para validar pesos e limiar).
+- Chave de API de um LLM (item 6).
+- Parecer jurídico sobre consentimento, compartilhamento de leads e envio a LLM.
+- Monetização (afeta só a página do organizador).
