@@ -191,6 +191,10 @@ namespace Conexa.Api.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("IdealCustomer")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -234,6 +238,21 @@ namespace Conexa.Api.Migrations
                     b.ToTable("CompanyMemberships");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.CompanyTag", b =>
+                {
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CompanyId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("CompanyTags");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.ContactPrivacy", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -273,6 +292,10 @@ namespace Conexa.Api.Migrations
                     b.Property<string>("Location")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<string>("MainThemes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -320,6 +343,105 @@ namespace Conexa.Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("EventMemberships");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.InterestTag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LibraryKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.PrimitiveCollection<List<string>>("Synonyms")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("EventId", "Status");
+
+                    b.HasIndex("EventId", "ParentId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("InterestTags");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantEventProfile", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ConsentExternalAiAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ConsentMatchingAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ConsentShareWithExhibitorsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Goal")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Timeframe")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("EventId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ParticipantEventProfiles");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantTag", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("EventId", "UserId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ParticipantTags");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Post", b =>
@@ -661,6 +783,25 @@ namespace Conexa.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.CompanyTag", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Company", "Company")
+                        .WithMany("Tags")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.InterestTag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.ContactPrivacy", b =>
                 {
                     b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "User")
@@ -689,6 +830,62 @@ namespace Conexa.Api.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.InterestTag", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.InterestTag", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantEventProfile", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantTag", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.InterestTag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.ParticipantEventProfile", "Profile")
+                        .WithMany("Tags")
+                        .HasForeignKey("EventId", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Post", b =>
@@ -812,11 +1009,18 @@ namespace Conexa.Api.Migrations
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Company", b =>
                 {
                     b.Navigation("Members");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Event", b =>
                 {
                     b.Navigation("Memberships");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantEventProfile", b =>
+                {
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Post", b =>

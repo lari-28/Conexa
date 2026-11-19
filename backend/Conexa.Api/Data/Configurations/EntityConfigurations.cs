@@ -46,6 +46,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         b.Property(x => x.Name).HasMaxLength(200).IsRequired();
         b.Property(x => x.Description).HasMaxLength(2000);
         b.Property(x => x.Location).HasMaxLength(200);
+        b.Property(x => x.MainThemes).HasMaxLength(2000);
         b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
         b.HasIndex(x => x.Status);
     }
@@ -74,6 +75,7 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
         b.Property(x => x.ProductsServices).HasMaxLength(2000);
         b.Property(x => x.BoothLocation).HasMaxLength(100);
         b.Property(x => x.Website).HasMaxLength(300);
+        b.Property(x => x.IdealCustomer).HasMaxLength(1000);
         b.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId);
         b.HasIndex(x => x.EventId);
     }
@@ -146,5 +148,52 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
         b.Property(x => x.TargetType).HasMaxLength(30).IsRequired();
         b.Property(x => x.Details).HasMaxLength(500);
         b.HasIndex(x => x.CreatedAt);
+    }
+}
+
+public class InterestTagConfiguration : IEntityTypeConfiguration<InterestTag>
+{
+    public void Configure(EntityTypeBuilder<InterestTag> b)
+    {
+        b.Property(x => x.Name).HasMaxLength(100).IsRequired();
+        b.Property(x => x.Description).HasMaxLength(300);
+        b.Property(x => x.LibraryKey).HasMaxLength(100);
+        b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+        b.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId);
+        b.HasOne(x => x.Parent).WithMany().HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
+        b.HasIndex(x => new { x.EventId, x.Status });
+        b.HasIndex(x => new { x.EventId, x.ParentId, x.Name }).IsUnique();
+    }
+}
+
+public class CompanyTagConfiguration : IEntityTypeConfiguration<CompanyTag>
+{
+    public void Configure(EntityTypeBuilder<CompanyTag> b)
+    {
+        b.HasKey(x => new { x.CompanyId, x.TagId });
+        b.HasOne(x => x.Company).WithMany(c => c.Tags).HasForeignKey(x => x.CompanyId);
+        b.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public class ParticipantEventProfileConfiguration : IEntityTypeConfiguration<ParticipantEventProfile>
+{
+    public void Configure(EntityTypeBuilder<ParticipantEventProfile> b)
+    {
+        b.HasKey(x => new { x.EventId, x.UserId });
+        b.Property(x => x.Goal).HasMaxLength(1000);
+        b.Property(x => x.Timeframe).HasConversion<string>().HasMaxLength(20);
+        b.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId);
+        b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public class ParticipantTagConfiguration : IEntityTypeConfiguration<ParticipantTag>
+{
+    public void Configure(EntityTypeBuilder<ParticipantTag> b)
+    {
+        b.HasKey(x => new { x.EventId, x.UserId, x.TagId });
+        b.HasOne(x => x.Profile).WithMany(p => p.Tags).HasForeignKey(x => new { x.EventId, x.UserId });
+        b.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).OnDelete(DeleteBehavior.Restrict);
     }
 }

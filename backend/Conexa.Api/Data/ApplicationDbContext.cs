@@ -16,6 +16,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Reaction> Reactions => Set<Reaction>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<InterestTag> InterestTags => Set<InterestTag>();
+    public DbSet<CompanyTag> CompanyTags => Set<CompanyTag>();
+    public DbSet<ParticipantEventProfile> ParticipantEventProfiles => Set<ParticipantEventProfile>();
+    public DbSet<ParticipantTag> ParticipantTags => Set<ParticipantTag>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
