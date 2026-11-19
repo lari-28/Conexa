@@ -52,3 +52,14 @@ Dois níveis: macro-área e tema. Sinônimos e descrição servem para distingui
 | POST | `/api/events/{eventId}/taxonomy/review` | organizador / admin (`Approve`, `Reject`, `Merge` em lote) |
 | POST | `/api/events/{eventId}/taxonomy/library/import` | organizador / admin (setor da biblioteca-base) |
 | GET / PUT | `/api/events/{eventId}/companies/{companyId}/tags` | PUT: organizador ou representante da empresa |
+
+## Perfil do visitante por evento (Etapa 2)
+
+Perfil do próprio usuário dentro do evento. O objetivo em texto livre é o sinal mais forte para o matching; os temas (até 8, aprovados) são opcionais. Consentimentos separados por finalidade: `ConsentMatching`, `ConsentShareWithExhibitors`, `ConsentExternalAi`. Compartilhar com expositores e usar IA externa exigem o consentimento de matching; revogar o matching revoga os dois. Conceder de novo preserva a data original.
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/events/{eventId}/my-profile` | membro (vazio e sem consentimentos se ainda não existir) |
+| PUT | `/api/events/{eventId}/my-profile` | membro (cria ou atualiza o próprio perfil) |
+
+`ReadyForMatching` = consentiu matching e informou objetivo (10+ caracteres) ou ao menos um tema.
