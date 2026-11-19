@@ -36,3 +36,19 @@ Erros seguem `ProblemDetails` (`400` validação, `401`, `403`, `404`, `409`, `4
 | POST | `/api/admin/events/{eventId}/organizers` ★ | admin |
 
 ★ = acrescentado à proposta inicial do documento técnico.
+
+## Taxonomia por evento (Etapa 2)
+
+Dois níveis: macro-área e tema. Sinônimos e descrição servem para distinguir termos ambíguos. Um estande escolhe até 3 temas aprovados.
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/events/{eventId}/taxonomy?status=` | membro (só aprovados); organizador filtra por status |
+| GET | `/api/events/{eventId}/taxonomy/library` | membro |
+| POST | `/api/events/{eventId}/taxonomy` | organizador / admin |
+| PUT / DELETE | `/api/events/{eventId}/taxonomy/{tagId}` | organizador / admin (DELETE arquiva) |
+| POST | `/api/events/{eventId}/taxonomy/suggestions` | membro (devolve o tema existente se já houver) |
+| GET | `/api/events/{eventId}/taxonomy/suggestions` | organizador / admin (agrupado, indica fusão) |
+| POST | `/api/events/{eventId}/taxonomy/review` | organizador / admin (`Approve`, `Reject`, `Merge` em lote) |
+| POST | `/api/events/{eventId}/taxonomy/library/import` | organizador / admin (setor da biblioteca-base) |
+| GET / PUT | `/api/events/{eventId}/companies/{companyId}/tags` | PUT: organizador ou representante da empresa |
