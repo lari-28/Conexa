@@ -63,3 +63,13 @@ Perfil do próprio usuário dentro do evento. O objetivo em texto livre é o sin
 | PUT | `/api/events/{eventId}/my-profile` | membro (cria ou atualiza o próprio perfil) |
 
 `ReadyForMatching` = consentiu matching e informou objetivo (10+ caracteres) ou ao menos um tema.
+
+## Perfil do estande (Etapa 2)
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| GET | `/api/events/{eventId}/companies/mine` | membro (estandes em que sou representante) |
+| POST | `/api/events/{eventId}/companies` | expositor ativo (vira representante; um estande por evento) ou organizador |
+| PUT | `/api/events/{eventId}/companies/{companyId}` | organizador ou representante |
+
+O detalhe (`GET .../companies/{companyId}`) passou a trazer `idealCustomer` e `tags`.
