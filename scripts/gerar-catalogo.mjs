@@ -27,7 +27,7 @@ const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
 const opt = (name, def) => { const i = args.indexOf(`--${name}`); return i >= 0 && args[i + 1] ? args[i + 1] : def; };
 const config = {
-  model: opt('model', process.env.GEMINI_MODEL ?? 'gemini-3.8-flash'),
+  model: opt('model', process.env.GEMINI_MODEL ?? 'gemini-3.5-flash'),
   out: resolve(ROOT, opt('out', 'dados-teste/catalogo')),
   temperature: Number(opt('temperature', '1.0')),
   attempts: Number(opt('tentativas', '3')),
@@ -184,7 +184,8 @@ async function main() {
     for (let attempt = 1; attempt <= config.attempts && !ok; attempt++) {
       process.stdout.write(`Lote ${lot.n} (${lot.foco.slice(0, 40)}…) tentativa ${attempt}/${config.attempts}… `);
       try {
-        const ctl = AbortSignal.timeout(180_000);
+        // modelos com raciocínio podem levar minutos num lote de 30 linhas (a latência observada varia de 4 s a 30 s num "oi")
+        const ctl = AbortSignal.timeout(300_000);
         const raw = await generate(apiKey, buildPrompt(template, lot) + feedback, ctl);
         const csv = cleanResponse(raw);
         const problems = validateLot(csv, lot, usedNames);
