@@ -122,3 +122,21 @@ Para ver tudo no seu ambiente: pare a API, rode `dotnet ef database update` (mig
 - Não há testes automatizados de frontend; o backend é testado com banco em memória e com a fumaça acima.
 - Faixa "alta" do matching exige sinal de tema além do texto (texto sozinho tende a ficar em "média"); é consequência dos pesos atuais e deve ser reavaliada com dados reais.
 - Cobertura de leads depende de o visitante ter salvo o perfil (os scores são calculados ao consultar e ao salvar).
+
+---
+
+## 9. Primeira medição do matching com catálogo e visitantes gerados por IA (23/11/2026)
+
+Dados: 150 estandes e 60 visitantes do Gemini (`dados-teste/`, congelados por hash). Ferramenta: `backend/Conexa.Eval`. Relatório completo: [docs/avaliacao-matching-gemini.md](avaliacao-matching-gemini.md). Mede só **texto livre + público-alvo**: o catálogo não tem taxonomia, então o sinal de tema continua sem medição.
+
+**O que os números dizem (teste oficial, 20 visitantes específicos)**
+- O motor atual põe o estande certo no top-3 para 100% e tem nDCG@5 de 79%, contra 73% da busca por palavra: **+6,4 pontos (IC 95%: +3,5 a +10,0)**. A vantagem é real, mas bem menor que os 30 pontos do teste sintético anterior. Aleatório fica em 3%.
+- Os visitantes específicos reaproveitam as palavras do catálogo, então esse resultado é otimista.
+- **Visitantes vagos** (n = 11, rótulo discutível): nDCG@5 de só 19%. Sem objetivo concreto, o motor quase não ajuda. Uma variante que dá mais peso ao público-alvo quando o texto é fraco subiu isso para 33%, sem mudar o teste (79% = 79%) e custando 2 pontos no desenvolvimento. É promissora, mas **não foi adotada**: n pequeno e rótulo discutível.
+- **Limiares:** com os cortes atuais (baixa ≥ 0,12), 4 dos 9 visitantes fora do escopo ainda receberiam recomendação, e a faixa "baixa" acerta só 45%. A faixa "média" (≥ 0,25) acertou 100% (32 itens). Cortar em 0,20 zeraria o falso alarme com 97% de cobertura, **neste** conjunto. Não mudei os limiares: o vocabulário compartilhado infla os scores, então um corte tirado daqui provavelmente restringiria demais num catálogo real. Precisa ser refeito com dados reais.
+- **Exposição:** 44 dos 150 estandes não aparecem no top-5 de nenhum dos 60 visitantes (Gini 0,46). Em parte é esperado, porque 9 visitantes são de fora do escopo.
+
+**O que isso muda no plano**
+1. Falta medir o sinal de **tema**, o que exige taxonomia sobre este catálogo (sugestão por IA ou biblioteca-base) e a decisão do provedor.
+2. O ajuste de pesos e limiares só vale com dados que não vieram do mesmo autor: visitantes escritos por outras pessoas ou reais.
+3. O caso de objetivo vago merece solução de produto (por exemplo, perguntar o setor e o cargo com mais ênfase), não só de ajuste de pesos.
