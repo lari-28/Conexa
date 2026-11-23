@@ -27,7 +27,7 @@ const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
 const opt = (name, def) => { const i = args.indexOf(`--${name}`); return i >= 0 && args[i + 1] ? args[i + 1] : def; };
 const config = {
-  model: opt('model', process.env.GEMINI_MODEL ?? 'gemini-2.5-flash'),
+  model: opt('model', process.env.GEMINI_MODEL ?? 'gemini-3.8-flash'),
   out: resolve(ROOT, opt('out', 'dados-teste/catalogo')),
   temperature: Number(opt('temperature', '1.0')),
   attempts: Number(opt('tentativas', '3')),
@@ -138,7 +138,12 @@ async function generate(apiKey, prompt, signal) {
     const res = await fetch(url, { method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify(body) });
     if ((res.status === 429 || res.status >= 500) && tries < 4) { await new Promise((r) => setTimeout(r, wait)); continue; }
     const json = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(`API ${res.status}: ${json?.error?.message ?? 'erro sem detalhes'}`);
+    if (!res.ok) {
+      const err = new Error(`API ${res.status}: ${json?.error?.message ?? 'erro sem detalhes'}`);
+      // 4xx (modelo inexistente, chave inválida, sem permissão) não melhora tentando de novo
+      err.fatal = res.status >= 400 && res.status < 500 && res.status !== 429 && res.status !== 408;
+      throw err;
+    }
     const cand = json.candidates?.[0];
     const text = (cand?.content?.parts ?? []).map((p) => p.text ?? '').join('');
     if (!text) throw new Error(`Resposta sem texto (motivo: ${cand?.finishReason ?? json.promptFeedback?.blockReason ?? 'desconhecido'}).`);
@@ -196,6 +201,10 @@ async function main() {
         }
       } catch (e) {
         console.log(`falhou: ${e.message}`);
+        if (e.fatal) {
+          console.error(`\nErro que repetir não resolve. Se for o modelo, tente: node scripts/gerar-catalogo.mjs --model <nome> (modelo atual: ${config.model}).`);
+          process.exit(1);
+        }
       }
     }
     if (!ok) { console.error(`Lote ${lot.n} não passou na validação após ${config.attempts} tentativas. Nada foi mesclado.`); process.exit(1); }

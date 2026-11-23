@@ -114,4 +114,4 @@ node scripts/gerar-catalogo.mjs --lotes 3     # refaz só o lote 3
 node scripts/gerar-catalogo.mjs --model <nome> --temperature 1.0
 ```
 
-O modelo padrão é `gemini-2.5-flash`; se o Google renomear ou aposentar o modelo, passe outro com `--model` ou `GEMINI_MODEL`. Alternativa à chave nos secrets: variável de ambiente `GEMINI_API_KEY`. O script foi testado contra um servidor falso (retentativa, limpeza de markdown, mesclagem); **ainda não foi executado contra o Gemini de verdade**.
+O modelo padrão é `gemini-3.8-flash` (o `gemini-2.5-flash` deixou de estar disponível para contas novas); se o Google renomear ou aposentar o modelo, passe outro com `--model` ou `GEMINI_MODEL`. Alternativa à chave nos secrets: variável de ambiente `GEMINI_API_KEY`. O script foi testado contra um servidor falso (retentativa, limpeza de markdown, mesclagem); **ainda não foi executado contra o Gemini de verdade**.
