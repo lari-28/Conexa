@@ -99,3 +99,19 @@ CATÁLOGO:
 ````
 
 Esse arquivo vira o gabarito de matching. Divida os 60 em 30 para ajustar pesos e 30 para teste, e não mexa nos de teste depois de ver os resultados.
+
+## Rodar automaticamente (script)
+
+`scripts/gerar-catalogo.mjs` executa os 5 lotes no Google Gemini usando este mesmo arquivo como fonte do prompt. Cada lote é validado (cabeçalho, 30 linhas, 9 colunas, estandes na faixa, sites `.example`, nomes únicos entre todos os lotes) e refeito até 3 vezes, devolvendo ao modelo a lista de erros. Saída em `dados-teste/catalogo/`: `lote-1..5.csv`, `catalogo_150.csv` (cabeçalho único, BOM para o Excel) e `metadados.json` (modelo, data, temperatura, hash do prompt).
+
+```powershell
+# guarda a chave fora do git (não cole a chave em chats)
+dotnet user-secrets set "Llm:ApiKey" "<sua-chave>" --project backend/Conexa.Api
+
+node scripts/gerar-catalogo.mjs --dry-run     # só mostra o prompt do lote 1
+node scripts/gerar-catalogo.mjs               # roda os 5 lotes
+node scripts/gerar-catalogo.mjs --lotes 3     # refaz só o lote 3
+node scripts/gerar-catalogo.mjs --model <nome> --temperature 1.0
+```
+
+O modelo padrão é `gemini-2.5-flash`; se o Google renomear ou aposentar o modelo, passe outro com `--model` ou `GEMINI_MODEL`. Alternativa à chave nos secrets: variável de ambiente `GEMINI_API_KEY`. O script foi testado contra um servidor falso (retentativa, limpeza de markdown, mesclagem); **ainda não foi executado contra o Gemini de verdade**.
