@@ -17,6 +17,7 @@ export function TagPicker({ eventId, value, onChange, max }: Props) {
   const [name, setName] = useState('');
   const [msg, setMsg] = useState<{ tone: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<string[]>([]); // sugestões desta sessão, aguardando aprovação
 
   if (loading && !tags) return <Loading />;
   if (error) return <Alert>{error.message}</Alert>;
@@ -32,17 +33,19 @@ export function TagPicker({ eventId, value, onChange, max }: Props) {
   };
 
   async function suggest() {
-    if (name.trim().length < 2) return;
+    const wanted = name.trim();
+    if (wanted.length < 2) { setMsg({ tone: 'error', text: 'Digite pelo menos 2 letras para sugerir um tema.' }); return; }
     setBusy(true); setMsg(null);
     try {
-      const t = await taxonomyApi.suggest(eventId, { name: name.trim(), description: null, parentId: null });
+      const t = await taxonomyApi.suggest(eventId, { name: wanted, description: null, parentId: null });
       setName('');
       if (t.status === 'Approved') {
         reload();
         if (!value.includes(t.id) && value.length < max) onChange([...value, t.id]);
-        setMsg({ tone: 'info', text: `Já existe o tema "${t.name}". Ele foi selecionado.` });
+        setMsg({ tone: 'info', text: `O tema "${t.name}" já existe e foi selecionado para você.` });
       } else {
-        setMsg({ tone: 'success', text: 'Sugestão enviada para a organização aprovar.' });
+        setPending((p) => (p.includes(t.name) ? p : [...p, t.name]));
+        setMsg({ tone: 'success', text: `Tema "${t.name}" sugerido com sucesso! Ele aparece na lista assim que a organização aprovar.` });
       }
     } catch (e) {
       setMsg({ tone: 'error', text: (e as Error).message });
@@ -66,8 +69,17 @@ export function TagPicker({ eventId, value, onChange, max }: Props) {
         </div>
       ))}
       {loose.length > 0 && <div className="chips">{loose.map(chip)}</div>}
+      {pending.length > 0 && (
+        <div className="chips" aria-label="Sugestões aguardando aprovação">
+          {pending.map((p) => <span key={p} className="chip chip-pending" title="Aguardando aprovação da organização">{p} · aguardando aprovação</span>)}
+        </div>
+      )}
       <div className="row" style={{ alignItems: 'flex-end' }}>
-        <div className="grow"><Input label="Não achou? Sugira um tema" value={name} maxLength={100} onChange={(e) => setName(e.target.value)} /></div>
+        <div className="grow">
+          {/* Enter aqui sugere o tema; sem isso, o Enter enviaria o formulário inteiro (estande ou perfil). */}
+          <Input label="Não achou? Sugira um tema" value={name} maxLength={100} onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void suggest(); } }} />
+        </div>
         <Button type="button" variant="secondary" loading={busy} onClick={suggest}>Sugerir</Button>
       </div>
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
