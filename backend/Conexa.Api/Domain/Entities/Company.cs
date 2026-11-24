@@ -11,6 +11,11 @@ public class Company
     public string? ProductsServices { get; set; }
     public string? BoothLocation { get; set; }
     public string? Website { get; set; }
+    /// <summary>Que tipo de cliente o expositor quer atender.</summary>
+    public string? IdealCustomer { get; set; }
+    /// <summary>Código do QR de check-in do estande. Gerado na primeira consulta.</summary>
+    public string? CheckInCode { get; set; }
+    public ICollection<CompanyTag> Tags { get; set; } = new List<CompanyTag>();
 
     public ICollection<CompanyMembership> Members { get; set; } = new List<CompanyMembership>();
 }

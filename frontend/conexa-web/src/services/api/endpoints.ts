@@ -3,6 +3,8 @@ import type {
   AdminUser, AuthResponse, CompanyDetail, CompanySummary, EventInfo, EventRole, MembershipStatus, Me,
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
+  LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
+  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview, AppNotification, CheckInResult, EventInsights, BoothMetrics,
 } from '../../types';
 
 export const authApi = {
@@ -52,6 +54,48 @@ export const companiesApi = {
   list: (eventId: string, q: { q?: string; page?: number }) =>
     api.get<Paged<CompanySummary>>(`/api/events/${eventId}/companies`, q),
   get: (eventId: string, id: string) => api.get<CompanyDetail>(`/api/events/${eventId}/companies/${id}`),
+  mine: (eventId: string) => api.get<CompanySummary[]>(`/api/events/${eventId}/companies/mine`),
+  create: (eventId: string, data: CompanyInput) => api.post<CompanyDetail>(`/api/events/${eventId}/companies`, data),
+  update: (eventId: string, id: string, data: CompanyInput) => api.put<CompanyDetail>(`/api/events/${eventId}/companies/${id}`, data),
+  setTags: (eventId: string, id: string, tagIds: string[]) => api.put<Tag[]>(`/api/events/${eventId}/companies/${id}/tags`, { tagIds }),
+};
+
+export interface CompanyInput {
+  name: string;
+  description: string | null;
+  segment: string | null;
+  productsServices: string | null;
+  boothLocation: string | null;
+  website: string | null;
+  idealCustomer: string | null;
+}
+
+export interface TagInput { name: string; description: string | null; parentId: string | null; synonyms: string[] }
+export const taxonomyApi = {
+  list: (eventId: string, status?: TagStatus) => api.get<Tag[]>(`/api/events/${eventId}/taxonomy`, { status }),
+  library: (eventId: string) => api.get<LibrarySector[]>(`/api/events/${eventId}/taxonomy/library`),
+  importLibrary: (eventId: string, sector: string) => api.post<Tag[]>(`/api/events/${eventId}/taxonomy/library/import`, { sector }),
+  create: (eventId: string, data: TagInput) => api.post<Tag>(`/api/events/${eventId}/taxonomy`, data),
+  update: (eventId: string, id: string, data: TagInput) => api.put<Tag>(`/api/events/${eventId}/taxonomy/${id}`, data),
+  archive: (eventId: string, id: string) => api.delete<void>(`/api/events/${eventId}/taxonomy/${id}`),
+  suggest: (eventId: string, data: { name: string; description: string | null; parentId: string | null }) =>
+    api.post<Tag>(`/api/events/${eventId}/taxonomy/suggestions`, data),
+  suggestions: (eventId: string) => api.get<SuggestionGroup[]>(`/api/events/${eventId}/taxonomy/suggestions`),
+  review: (eventId: string, action: 'Approve' | 'Reject' | 'Merge', tagIds: string[], mergeIntoId?: string) =>
+    api.post<ReviewResult>(`/api/events/${eventId}/taxonomy/review`, { action, tagIds, mergeIntoId: mergeIntoId ?? null }),
+};
+
+export interface VisitorProfileInput {
+  goal: string | null;
+  timeframe: VisitTimeframe | null;
+  tagIds: string[];
+  consentMatching: boolean;
+  consentShareWithExhibitors: boolean;
+  consentExternalAi: boolean;
+}
+export const visitorProfileApi = {
+  get: (eventId: string) => api.get<VisitorProfile>(`/api/events/${eventId}/my-profile`),
+  save: (eventId: string, data: VisitorProfileInput) => api.put<VisitorProfile>(`/api/events/${eventId}/my-profile`, data),
 };
 
 export interface ReactionResult { count: number; mine: ReactionType | null }
@@ -98,4 +142,46 @@ export const adminApi = {
   users: (q?: string, page?: number) => api.get<Paged<AdminUser>>('/api/admin/users', { q, page }),
   setActive: (id: string, isActive: boolean) => api.patch<void>(`/api/admin/users/${id}`, { isActive }),
   addOrganizer: (eventId: string, email: string) => api.post<void>(`/api/admin/events/${eventId}/organizers`, { email }),
+};
+
+export const matchingApi = {
+  booths: (eventId: string, limit = 10) => api.get<BoothMatchesResponse>(`/api/events/${eventId}/matches/booths`, { limit }),
+  leads: (eventId: string, companyId: string, limit = 20) =>
+    api.get<LeadMatchesResponse>(`/api/events/${eventId}/companies/${companyId}/leads`, { limit }),
+};
+
+export const invitesApi = {
+  preview: (code: string) => api.get<InvitePreview>(`/api/invites/${encodeURIComponent(code)}`),
+  list: (eventId: string) => api.get<Invite[]>(`/api/organizer/events/${eventId}/invites`),
+  create: (eventId: string, data: { role: EventRole; maxUses: number | null; expiresInDays: number | null }) =>
+    api.post<Invite>(`/api/organizer/events/${eventId}/invites`, data),
+  revoke: (eventId: string, id: string) => api.delete<void>(`/api/organizer/events/${eventId}/invites/${id}`),
+};
+
+export const engagementApi = {
+  checkInCode: (eventId: string, companyId: string) =>
+    api.get<{ code: string }>(`/api/events/${eventId}/companies/${companyId}/checkin-code`),
+  checkIn: (eventId: string, code: string) => api.post<CheckInResult>(`/api/events/${eventId}/checkins`, { code }),
+  feedback: (eventId: string, companyId: string, useful: boolean) =>
+    api.post<void>(`/api/events/${eventId}/matches/feedback`, { companyId, useful }),
+};
+
+export const notificationsApi = {
+  list: (unreadOnly = false) => api.get<AppNotification[]>('/api/notifications', { unreadOnly }),
+  count: () => api.get<number>('/api/notifications/count'),
+  read: (id: string) => api.post<void>(`/api/notifications/${id}/read`),
+  readAll: () => api.post<void>('/api/notifications/read-all'),
+};
+
+export const importApi = {
+  exhibitors: (eventId: string, csv: string, commit: boolean) =>
+    api.post<ImportReport>(`/api/organizer/events/${eventId}/exhibitors/import`, { csv, commit }),
+};
+
+export const insightsApi = {
+  event: (eventId: string) => api.get<EventInsights>(`/api/organizer/events/${eventId}/insights`),
+  booth: (eventId: string, companyId: string) => api.get<BoothMetrics>(`/api/events/${eventId}/companies/${companyId}/report`),
+  exportBooths: (eventId: string) => api.download(`/api/organizer/events/${eventId}/export/booths.csv`, 'estandes.csv'),
+  exportThemes: (eventId: string) => api.download(`/api/organizer/events/${eventId}/export/themes.csv`, 'temas.csv'),
+  exportLeads: (eventId: string, companyId: string) => api.download(`/api/events/${eventId}/companies/${companyId}/leads.csv`, 'leads.csv'),
 };

@@ -7,3 +7,5 @@ public enum ContentStatus { Visible, Hidden, Deleted }
 public enum ReactionType { Like, Insightful, Celebrate }
 public enum ReportTargetType { Post, Comment, Profile }
 public enum ReportStatus { Open, Dismissed, ActionTaken }
+public enum TagStatus { Suggested, Approved, Rejected }
+public enum VisitTimeframe { Exploring, ThisQuarter, ThisMonth, Now }

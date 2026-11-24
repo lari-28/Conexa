@@ -21,6 +21,8 @@ export function CompanyDetailPage() {
               {c.segment && <Badge tone="brand">{c.segment}</Badge>}
               {c.description && <p>{c.description}</p>}
               {c.productsServices && <p><strong>Produtos e serviços:</strong> {c.productsServices}</p>}
+              {c.idealCustomer && <p><strong>Cliente ideal:</strong> {c.idealCustomer}</p>}
+              {c.tags.length > 0 && <div className="chips">{c.tags.map((t) => <Badge key={t.id} tone="success">{t.name}</Badge>)}</div>}
               {c.boothLocation && <p>📍 {c.boothLocation}</p>}
               {c.website && <p>🔗 <a href={c.website} target="_blank" rel="noreferrer noopener">{c.website}</a></p>}
             </Card>

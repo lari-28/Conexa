@@ -9,6 +9,8 @@ public class Event
     public DateTimeOffset EndsAt { get; set; }
     public string? Location { get; set; }
     public EventStatus Status { get; set; } = EventStatus.Draft;
+    /// <summary>Temas e ideias principais da feira, informados pelo organizador.</summary>
+    public string? MainThemes { get; set; }
 
     public ICollection<EventMembership> Memberships { get; set; } = new List<EventMembership>();
 }

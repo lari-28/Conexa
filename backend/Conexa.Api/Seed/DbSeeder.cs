@@ -131,6 +131,107 @@ public static class DbSeeder
             db.Reactions.Add(new Reaction { PostId = p2.Id, UserId = ana.Id, Type = ReactionType.Insightful });
             await db.SaveChangesAsync();
         }
+
+        await SeedMatchingDemoAsync(sp, db, ev, pwd, ana, bruno);
+    }
+
+    /// <summary>
+    /// Dados fictícios para demonstrar taxonomia, matching e leads sem preencher à mão. Idempotente e
+    /// aditivo: só cria o que falta, então também funciona num banco de demonstração já existente.
+    /// </summary>
+    private static async Task SeedMatchingDemoAsync(IServiceProvider sp, ApplicationDbContext db, Event ev, string pwd,
+        ApplicationUser ana, ApplicationUser bruno)
+    {
+        // Taxonomia: bibliotecas de setor + dois temas próprios do evento
+        async Task<InterestTag> Ensure(string key, string name, string? desc, Guid? parent, string[] synonyms)
+        {
+            var t = await db.InterestTags.FirstOrDefaultAsync(x => x.EventId == ev.Id && x.LibraryKey == key);
+            if (t is not null) return t;
+            t = new InterestTag { EventId = ev.Id, ParentId = parent, Name = name, Description = desc, LibraryKey = key,
+                Synonyms = TaxonomyRules.NormalizeSynonyms(synonyms, name), Status = TagStatus.Approved };
+            db.InterestTags.Add(t);
+            await db.SaveChangesAsync();
+            return t;
+        }
+        foreach (var sector in TaxonomyLibrary.Sectors.Where(s => s.Key is "industria" or "tecnologia"))
+            foreach (var area in sector.Areas)
+            {
+                var a = await Ensure(area.Key, area.Name, null, null, []);
+                foreach (var th in area.Themes) await Ensure(th.Key, th.Name, th.Description, a.Id, th.Synonyms);
+            }
+        var agroArea = await Ensure("demo.agro", "Agronegócio", null, null, []);
+        var agroTag = await Ensure("demo.agro.digital", "Agricultura digital", "Monitoramento de lavouras e gestão de safra com dados.",
+            agroArea.Id, ["agro", "lavoura", "safra", "agricultura de precisão"]);
+        var energiaArea = await Ensure("demo.energia", "Energia", null, null, []);
+        var solarTag = await Ensure("demo.energia.solar", "Energia solar", "Projetos fotovoltaicos e eficiência energética para empresas.",
+            energiaArea.Id, ["fotovoltaica", "painéis solares", "energia renovável"]);
+
+        InterestTag Tag(string key) => db.InterestTags.Local.First(t => t.EventId == ev.Id && t.LibraryKey == key);
+        await db.InterestTags.Where(t => t.EventId == ev.Id).LoadAsync();
+
+        // Empresas: cliente ideal e temas nas existentes; duas novas do setor industrial
+        var ideal = new Dictionary<string, (string Ideal, string[] Tags)>
+        {
+            ["Nimbus Cloud"] = ("Startups e médias empresas que querem migrar ou operar sistemas em nuvem.", ["tec.infra.cloud", "tec.infra.ciber"]),
+            ["AgroTech Sul"] = ("Produtores rurais e cooperativas que querem acompanhar lavouras e safra com dados.", ["demo.agro.digital"]),
+            ["Verde Energia"] = ("Indústrias e comércios com alto consumo de energia que querem reduzir a conta de luz.", ["demo.energia.solar"]),
+        };
+        var extra = new[]
+        {
+            new Company { EventId = ev.Id, Name = "Prodtrack Sistemas", Segment = "Software industrial",
+                Description = "Software de controle de produção e apontamento de ordens no chão de fábrica, integrado ao ERP.",
+                ProductsServices = "MES, apontamento de produção, indicadores de eficiência (OEE) e integração com ERP.",
+                BoothLocation = "Pavilhão C • Estande 06", IdealCustomer = "Indústrias de transformação, com gerente de produção ou de operações." },
+            new Company { EventId = ev.Id, Name = "Sensa IoT", Segment = "Automação industrial",
+                Description = "Sensores e monitoramento de máquinas em tempo real.",
+                ProductsServices = "Sensores de vibração e temperatura, painel de paradas de máquina e manutenção preditiva.",
+                BoothLocation = "Pavilhão C • Estande 12", IdealCustomer = "Fábricas que querem reduzir paradas de máquina e custo de manutenção." },
+        };
+        foreach (var c in extra)
+            if (!await db.Companies.AnyAsync(x => x.EventId == ev.Id && x.Name == c.Name)) db.Companies.Add(c);
+        await db.SaveChangesAsync();
+        ideal["Prodtrack Sistemas"] = (extra[0].IdealCustomer!, ["ind.gestao.mes", "ind.gestao.erp"]);
+        ideal["Sensa IoT"] = (extra[1].IdealCustomer!, ["ind.automacao.iot"]);
+
+        foreach (var c in await db.Companies.Include(x => x.Tags).Where(x => x.EventId == ev.Id).ToListAsync())
+        {
+            if (!ideal.TryGetValue(c.Name, out var cfg)) continue;
+            c.IdealCustomer ??= cfg.Ideal;
+            if (c.Tags.Count == 0)
+                foreach (var key in cfg.Tags) c.Tags.Add(new CompanyTag { CompanyId = c.Id, TagId = Tag(key).Id });
+        }
+        await db.SaveChangesAsync();
+
+        // Visitantes fictícios com perfil no evento (consentimentos variados para demonstrar as regras)
+        var diego = await EnsureUserAsync(sp, "diego@conexa.demo", "Diego Rocha", pwd, [Roles.Participant],
+            new UserProfile { CompanyName = "Metalúrgica Rocha", JobTitle = "Gerente de produção", Area = "Indústria metalmecânica" },
+            new ContactPrivacy { EmailVisible = true, ConsentGivenAt = DateTimeOffset.UtcNow });
+        var eva = await EnsureUserAsync(sp, "eva@conexa.demo", "Eva Martins", pwd, [Roles.Participant],
+            new UserProfile { CompanyName = "Fazenda Boa Safra", JobTitle = "Produtora rural", Area = "Agronegócio" });
+        var felipe = await EnsureUserAsync(sp, "felipe@conexa.demo", "Felipe Costa", pwd, [Roles.Participant],
+            new UserProfile { CompanyName = "Costa Têxtil", JobTitle = "Diretor", Area = "Indústria têxtil" });
+        foreach (var u in new[] { diego, eva, felipe }) await EnsureMembershipAsync(db, ev.Id, u.Id, EventRole.Participant);
+        await db.SaveChangesAsync();
+
+        var now = DateTimeOffset.UtcNow;
+        void Profile(ApplicationUser u, string goal, VisitTimeframe tf, bool share, params string[] tagKeys)
+        {
+            if (db.ParticipantEventProfiles.Any(p => p.EventId == ev.Id && p.UserId == u.Id)) return;
+            var p = new ParticipantEventProfile { EventId = ev.Id, UserId = u.Id, Goal = goal, Timeframe = tf,
+                ConsentMatchingAt = now, ConsentShareWithExhibitorsAt = share ? now : null };
+            foreach (var k in tagKeys) p.Tags.Add(new ParticipantTag { EventId = ev.Id, UserId = u.Id, TagId = Tag(k).Id });
+            db.ParticipantEventProfiles.Add(p);
+        }
+        Profile(diego, "Quero automatizar o controle de produção da minha fábrica e acompanhar as paradas de máquina.",
+            VisitTimeframe.ThisQuarter, share: true, "ind.gestao.mes");
+        Profile(eva, "Procuro uma solução para monitorar minhas lavouras e planejar a safra com dados.",
+            VisitTimeframe.ThisMonth, share: true);
+        Profile(felipe, "Preciso reduzir a conta de energia da minha fábrica têxtil.",
+            VisitTimeframe.Exploring, share: false); // aceita recomendações, mas NÃO o compartilhamento: não aparece como lead
+        Profile(ana, "Quero migrar a infraestrutura da minha startup para a nuvem com segurança e bom custo.",
+            VisitTimeframe.Now, share: true, "tec.infra.cloud");
+        Profile(bruno, "Procuro clientes e parceiros na área de tecnologia.", VisitTimeframe.Exploring, share: false);
+        await db.SaveChangesAsync();
     }
 
     private static async Task EnsureMembershipAsync(ApplicationDbContext db, Guid eventId, Guid userId, EventRole role)

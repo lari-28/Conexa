@@ -36,7 +36,8 @@ public record CompanySummary(Guid Id, string Name, string? Segment, string? Desc
 public record Representative(Guid UserId, string DisplayName, string? PhotoUrl, string? Title,
     string? Email, string? Phone);
 public record CompanyDetail(Guid Id, string Name, string? Description, string? Segment, string? ProductsServices,
-    string? BoothLocation, string? Website, IReadOnlyList<Representative> Representatives);
+    string? BoothLocation, string? Website, IReadOnlyList<Representative> Representatives,
+    string? IdealCustomer, IReadOnlyList<TagResponse> Tags);
 
 public record AuthorInfo(Guid Id, string DisplayName, string? PhotoUrl);
 public record PostResponse(Guid Id, Guid EventId, AuthorInfo Author, string Text, string? Category,

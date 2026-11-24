@@ -70,7 +70,25 @@ async function request<T>(method: string, path: string, body?: unknown, query?: 
   return data as T;
 }
 
+/** Baixa um arquivo autenticado (CSV) e dispara o download no navegador. */
+async function download(path: string, filename: string): Promise<void> {
+  const token = tokenStorage.get();
+  let res: Response;
+  try {
+    res = await fetch(buildUrl(path), { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  } catch {
+    throw new ApiError(0, 'Não foi possível conectar ao servidor. Verifique se a API está em execução.');
+  }
+  if (!res.ok) throw new ApiError(res.status, res.status === 403 ? 'Você não tem permissão para esta exportação.' : 'Não foi possível exportar.');
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export const api = {
+  download,
   get: <T>(path: string, query?: Query) => request<T>('GET', path, undefined, query),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body ?? {}),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body ?? {}),
