@@ -4,6 +4,7 @@ import { companiesApi } from '../services/api/endpoints';
 import { useAsync } from '../hooks/useAsync';
 import { Avatar, Badge, Card } from '../components/ui';
 import { AsyncView } from '../components/common';
+import { EventMaps } from '../components/EventMaps';
 
 export function CompanyDetailPage() {
   const { id = '' } = useParams();
@@ -47,6 +48,7 @@ export function CompanyDetailPage() {
           </>
         )}
       </AsyncView>
+      <EventMaps eventId={ev.id} />
     </>
   );
 }

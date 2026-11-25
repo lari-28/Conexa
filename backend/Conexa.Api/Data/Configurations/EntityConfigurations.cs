@@ -52,6 +52,19 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
     }
 }
 
+public class EventMapConfiguration : IEntityTypeConfiguration<EventMap>
+{
+    public void Configure(EntityTypeBuilder<EventMap> b)
+    {
+        b.HasKey(x => x.Id);
+        b.HasOne(x => x.Event).WithMany(e => e.Maps).HasForeignKey(x => x.EventId).OnDelete(DeleteBehavior.Cascade);
+        b.Property(x => x.Description).HasMaxLength(120).IsRequired();
+        b.Property(x => x.FileName).HasMaxLength(255).IsRequired();
+        b.Property(x => x.Image).IsRequired();
+        b.HasIndex(x => new { x.EventId, x.CreatedAt });
+    }
+}
+
 public class EventMembershipConfiguration : IEntityTypeConfiguration<EventMembership>
 {
     public void Configure(EntityTypeBuilder<EventMembership> b)

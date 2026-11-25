@@ -73,7 +73,7 @@ function Body({ d }: { d: EventInsights }) {
               <span className="small muted">demanda {x.demand} · oferta {x.supply}</span></div>
             <div aria-hidden style={{ display: 'grid', gap: 2 }}>
               <div style={{ height: 6, width: `${(x.demand / maxDemand) * 100}%`, background: 'var(--indigo)', borderRadius: 3 }} />
-              <div style={{ height: 6, width: `${(x.supply / maxDemand) * 100}%`, background: 'var(--teal)', borderRadius: 3 }} />
+              <div style={{ height: 6, width: `${(x.supply / maxDemand) * 100}%`, background: 'var(--chrome-shadow)', borderRadius: 3 }} />
             </div>
           </div>
         ))}

@@ -20,10 +20,16 @@ const bottomLinks = [
   { to: '/participantes', label: 'Pessoas', icon: svg('M16 20v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM20 20v-2a3 3 0 00-2.5-3M15.5 3.2a3.5 3.5 0 010 6.6') },
   { to: '/perfil', label: 'Perfil', icon: svg('M20 21a8 8 0 10-16 0M12 12a4.5 4.5 0 100-9 4.5 4.5 0 000 9z') },
 ];
+const participantBottomLinks = [
+  home,
+  bottomLinks[2],
+  bottomLinks[1],
+  { to: '/forum', label: 'Comunidade', icon: svg('M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8A8.5 8.5 0 018.7 3.9a8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z') },
+];
 
 export function AppLayout() {
   const { user, logout, hasRole } = useAuth();
-  const { events, current, select, loading } = useEvent();
+  const { events, current, select, loading, roleInEvent } = useEvent();
   const [menu, setMenu] = useState(false);
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
@@ -43,10 +49,12 @@ export function AppLayout() {
 
   if (!user) return null;
 
+  const isParticipant = roleInEvent === 'Participant';
+  const visibleBottomLinks = isParticipant ? participantBottomLinks : bottomLinks;
   const go = (to: string) => { setMenu(false); navigate(to); };
 
   return (
-    <div className="shell">
+    <div className={`shell ${isParticipant ? 'shell-participant' : ''}`}>
       <header className="topbar">
         <div className="topbar-inner">
           <span className="logo" onClick={() => go('/evento')}>CONEXA</span>
@@ -89,11 +97,11 @@ export function AppLayout() {
       </main>
 
       <nav className="bottom-nav" aria-label="Principal (celular)">
-        {bottomLinks.map((l) => (
+        {visibleBottomLinks.map((l) => (
           <NavLink key={l.to} to={l.to}>{l.icon}<small>{l.label}</small></NavLink>
         ))}
         <button type="button" className="bottom-menu" onClick={() => setSheet(true)} aria-label="Abrir menu">
-          {svg('M4 6h16M4 12h16M4 18h16')}<small>Menu</small>
+          {svg('M4 6h16M4 12h16M4 18h16')}<small>{isParticipant ? 'Mais' : 'Menu'}</small>
         </button>
       </nav>
       {sheet && <MobileMenu groups={groups} onClose={() => setSheet(false)} />}

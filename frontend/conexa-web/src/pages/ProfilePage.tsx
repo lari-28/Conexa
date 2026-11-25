@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import { useLocation } from 'react-router-dom';
 import { profileApi } from '../services/api/endpoints';
 import { ApiError } from '../services/api/client';
 import { useAsync } from '../hooks/useAsync';
@@ -10,6 +11,12 @@ import type { Profile } from '../types';
 
 export function ProfilePage() {
   const { data, loading, error, reload } = useAsync(() => profileApi.me(), []);
+  const location = useLocation();
+  useEffect(() => {
+    if (!loading && data && location.hash === '#privacidade') {
+      document.getElementById('privacidade')?.scrollIntoView({ block: 'start' });
+    }
+  }, [data, loading, location.hash]);
   return (
     <>
       <PageHeader title="Meu perfil" subtitle="Defina o que os outros participantes podem ver." />
@@ -90,7 +97,7 @@ function PrivacyForm({ initial, email }: { initial: { emailVisible: boolean; pho
   }
 
   return (
-    <form className="card stack" onSubmit={submit}>
+    <form id="privacidade" className="card stack" onSubmit={submit}>
       <h2>Privacidade de contato</h2>
       <p className="muted small">Por padrão seus contatos ficam ocultos. Você pode mudar isso a qualquer momento.</p>
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}

@@ -5,6 +5,7 @@ import { organizerApi } from '../../services/api/endpoints';
 import { Alert, Button, Input, Select, Textarea } from '../../components/ui';
 import { PageHeader } from '../../components/common';
 import { emptyToNull, formatDate, fromLocalInput, toLocalInput } from '../../utils/format';
+import { EventMaps } from '../../components/EventMaps';
 
 export function OrganizerEventPage() {
   const ev = useCurrentEvent();
@@ -44,6 +45,7 @@ export function OrganizerEventPage() {
           options={[{ value: 'Draft', label: 'Rascunho' }, { value: 'Active', label: 'Ativo' }, { value: 'Finished', label: 'Encerrado' }]} />
         <Button type="submit" loading={busy}>Salvar</Button>
       </form>
+      <EventMaps eventId={ev.id} organizer />
     </>
   );
 }

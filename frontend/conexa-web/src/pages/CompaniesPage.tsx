@@ -6,6 +6,7 @@ import { useAsync } from '../hooks/useAsync';
 import { useDebounce } from '../hooks/useDebounce';
 import { Badge, Card, EmptyState, Input } from '../components/ui';
 import { AsyncView, PageHeader, Pagination } from '../components/common';
+import { EventMaps } from '../components/EventMaps';
 
 export function CompaniesPage() {
   const ev = useCurrentEvent();
@@ -18,6 +19,7 @@ export function CompaniesPage() {
   return (
     <>
       <PageHeader title="Empresas e expositores" />
+      <EventMaps eventId={ev.id} />
       <Input label="Buscar" placeholder="Nome ou segmento" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
       <AsyncView loading={loading} error={error} hasData={!!data}>
         {data && data.items.length === 0 ? <EmptyState title="Nenhuma empresa encontrada" /> : (

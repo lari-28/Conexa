@@ -371,6 +371,39 @@ namespace Conexa.Api.Migrations
                     b.ToTable("EventInvites");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventMap", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<byte[]>("Image")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId", "CreatedAt");
+
+                    b.ToTable("EventMaps");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.EventMembership", b =>
                 {
                     b.Property<Guid>("EventId")
@@ -947,6 +980,17 @@ namespace Conexa.Api.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventMap", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
+                        .WithMany("Maps")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.CompanyMembership", b =>
                 {
                     b.HasOne("Conexa.Api.Domain.Entities.Company", "Company")
@@ -1248,6 +1292,7 @@ namespace Conexa.Api.Migrations
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Event", b =>
                 {
                     b.Navigation("Memberships");
+                    b.Navigation("Maps");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.ParticipantEventProfile", b =>
