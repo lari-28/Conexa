@@ -37,14 +37,14 @@ async function request<T>(method: string, path: string, body?: unknown, query?: 
   const headers: Record<string, string> = { Accept: 'application/json' };
   const token = tokenStorage.get();
   if (token) headers.Authorization = `Bearer ${token}`;
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (body !== undefined && !(body instanceof FormData)) headers['Content-Type'] = 'application/json';
 
   let res: Response;
   try {
     res = await fetch(buildUrl(path, query), {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body instanceof FormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
     throw new ApiError(0, 'Não foi possível conectar ao servidor. Verifique se a API está em execução.');
@@ -91,6 +91,7 @@ export const api = {
   download,
   get: <T>(path: string, query?: Query) => request<T>('GET', path, undefined, query),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body ?? {}),
+  postForm: <T>(path: string, body: FormData) => request<T>('POST', path, body),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body ?? {}),
   patch: <T>(path: string, body?: unknown) => request<T>('PATCH', path, body ?? {}),
   delete: <T>(path: string) => request<T>('DELETE', path),

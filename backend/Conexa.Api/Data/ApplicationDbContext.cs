@@ -8,6 +8,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
     public DbSet<ContactPrivacy> ContactPrivacies => Set<ContactPrivacy>();
     public DbSet<Event> Events => Set<Event>();
+    public DbSet<EventMap> EventMaps => Set<EventMap>();
     public DbSet<EventMembership> EventMemberships => Set<EventMembership>();
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<CompanyMembership> CompanyMemberships => Set<CompanyMembership>();

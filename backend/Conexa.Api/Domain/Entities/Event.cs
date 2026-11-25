@@ -13,6 +13,18 @@ public class Event
     public string? MainThemes { get; set; }
 
     public ICollection<EventMembership> Memberships { get; set; } = new List<EventMembership>();
+    public ICollection<EventMap> Maps { get; set; } = new List<EventMap>();
+}
+
+public class EventMap
+{
+    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public Guid EventId { get; set; }
+    public Event Event { get; set; } = null!;
+    public string Description { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public byte[] Image { get; set; } = [];
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 public class EventMembership

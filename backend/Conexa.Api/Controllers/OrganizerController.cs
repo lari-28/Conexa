@@ -6,6 +6,47 @@ public class OrganizerController(ApplicationDbContext db, IEventAccessService ac
 {
     private static readonly EventStatus[] OrganizerStatuses = [EventStatus.Draft, EventStatus.Active, EventStatus.Finished];
 
+    [HttpPost("events/{eventId:guid}/maps"), Authorize(Policy = Policies.EventOrganizer), Consumes("multipart/form-data")]
+    [RequestSizeLimit(15_000_000)]
+    public async Task<ActionResult<EventMapResponse>> AddMap(Guid eventId, CancellationToken ct)
+    {
+        var form = await Request.ReadFormAsync(ct);
+        var file = form.Files.GetFile("file");
+        var description = form["description"].ToString().Trim();
+        if (file is null || file.Length == 0) return ValidationFailure("file", "Selecione uma imagem PNG.");
+        if (file.Length > 14_000_000) return ValidationFailure("file", "A imagem deve ter até 14 MB.");
+        if (string.IsNullOrWhiteSpace(description) || description.Length > 120)
+            return ValidationFailure("description", "Informe uma descrição de até 120 caracteres.");
+        if (!string.Equals(Path.GetExtension(file.FileName), ".png", StringComparison.OrdinalIgnoreCase))
+            return ValidationFailure("file", "Envie um arquivo PNG.");
+
+        await using var input = file.OpenReadStream();
+        using var buffer = new MemoryStream();
+        await input.CopyToAsync(buffer, ct);
+        var image = buffer.ToArray();
+        if (image.Length < 8 || !image.AsSpan(0, 8).SequenceEqual(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }))
+            return ValidationFailure("file", "O arquivo selecionado não é um PNG válido.");
+
+        var map = new EventMap { EventId = eventId, Description = description,
+            FileName = Path.GetFileName(file.FileName), Image = image };
+        db.EventMaps.Add(map);
+        db.AuditLogs.Add(Audit(eventId, "event.map.add", nameof(EventMap), map.Id, description));
+        await db.SaveChangesAsync(ct);
+        return Created($"/api/events/{eventId}/maps", new EventMapResponse(map.Id, map.Description,
+            map.FileName, $"data:image/png;base64,{Convert.ToBase64String(map.Image)}", map.CreatedAt));
+    }
+
+    [HttpDelete("events/{eventId:guid}/maps/{mapId:guid}"), Authorize(Policy = Policies.EventOrganizer)]
+    public async Task<IActionResult> DeleteMap(Guid eventId, Guid mapId, CancellationToken ct)
+    {
+        var map = await db.EventMaps.FirstOrDefaultAsync(m => m.Id == mapId && m.EventId == eventId, ct);
+        if (map is null) return NotFound();
+        db.EventMaps.Remove(map);
+        db.AuditLogs.Add(Audit(eventId, "event.map.delete", nameof(EventMap), map.Id, map.Description));
+        await db.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
     // ---------- Evento (RF17) ----------
 
     [HttpPut("events/{eventId:guid}"), Authorize(Policy = Policies.EventOrganizer)]

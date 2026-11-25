@@ -36,6 +36,13 @@ export interface EventInfo {
   location: string | null;
   status: EventStatus;
 }
+export interface EventMapInfo {
+  id: string;
+  description: string;
+  fileName: string;
+  imageDataUrl: string;
+  createdAt: string;
+}
 export interface MyEvent {
   event: EventInfo;
   roleInEvent: EventRole;

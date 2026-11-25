@@ -4,7 +4,7 @@ import type {
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
   LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
-  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview, AppNotification, CheckInResult, EventInsights, BoothMetrics,
+  BoothMatchesResponse, LeadMatchesResponse, ImportReport, Invite, InvitePreview, AppNotification, CheckInResult, EventInsights, BoothMetrics, EventMapInfo,
 } from '../../types';
 
 export const authApi = {
@@ -17,6 +17,7 @@ export const authApi = {
 
 export const eventsApi = {
   mine: () => api.get<MyEvent[]>('/api/events/mine'),
+  maps: (eventId: string) => api.get<EventMapInfo[]>(`/api/events/${eventId}/maps`),
 };
 
 export interface ProfileInput {
@@ -125,6 +126,11 @@ export interface EventInput {
 }
 export const organizerApi = {
   updateEvent: (eventId: string, data: EventInput) => api.put<EventInfo>(`/api/organizer/events/${eventId}`, data),
+  addMap: (eventId: string, file: File, description: string) => {
+    const data = new FormData(); data.append('file', file); data.append('description', description);
+    return api.postForm<EventMapInfo>(`/api/organizer/events/${eventId}/maps`, data);
+  },
+  deleteMap: (eventId: string, mapId: string) => api.delete<void>(`/api/organizer/events/${eventId}/maps/${mapId}`),
   members: (eventId: string, q?: string) => api.get<Paged<Member>>(`/api/organizer/events/${eventId}/members`, { q }),
   addMember: (eventId: string, email: string, roleInEvent: EventRole) =>
     api.post<void>(`/api/organizer/events/${eventId}/members`, { email, roleInEvent }),

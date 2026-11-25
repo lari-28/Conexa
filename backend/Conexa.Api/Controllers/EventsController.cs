@@ -3,6 +3,15 @@ namespace Conexa.Api.Controllers;
 [Route("api/events")]
 public class EventsController(ApplicationDbContext db) : ApiControllerBase
 {
+    [HttpGet("{eventId:guid}/maps"), Authorize(Policy = Policies.EventMember)]
+    public async Task<ActionResult<List<EventMapResponse>>> Maps(Guid eventId, CancellationToken ct)
+    {
+        var maps = await db.EventMaps.AsNoTracking().Where(m => m.EventId == eventId)
+            .OrderBy(m => m.CreatedAt).ToListAsync(ct);
+        return maps.Select(m => new EventMapResponse(m.Id, m.Description, m.FileName,
+            $"data:image/png;base64,{Convert.ToBase64String(m.Image)}", m.CreatedAt)).ToList();
+    }
+
     /// <summary>Eventos do usuário (administrador vê todos os não arquivados).</summary>
     [HttpGet("mine")]
     public async Task<ActionResult<List<MyEventResponse>>> Mine(CancellationToken ct)
