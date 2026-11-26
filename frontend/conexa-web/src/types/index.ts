@@ -43,6 +43,24 @@ export interface EventMapInfo {
   imageDataUrl: string;
   createdAt: string;
 }
+export type EventActivityKind = 'Talk' | 'Activity';
+export interface EventActivityPerson {
+  userId: string;
+  displayName: string;
+  title: string | null;
+  companyName: string | null;
+  roleInEvent: EventRole;
+}
+export interface EventActivityInfo {
+  id: string;
+  kind: EventActivityKind;
+  title: string;
+  description: string | null;
+  location: string;
+  startsAt: string;
+  endsAt: string;
+  people: EventActivityPerson[];
+}
 export interface MyEvent {
   event: EventInfo;
   roleInEvent: EventRole;

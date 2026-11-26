@@ -6,6 +6,87 @@ public class OrganizerController(ApplicationDbContext db, IEventAccessService ac
 {
     private static readonly EventStatus[] OrganizerStatuses = [EventStatus.Draft, EventStatus.Active, EventStatus.Finished];
 
+    [HttpPost("events/{eventId:guid}/activities"), Authorize(Policy = Policies.EventOrganizer)]
+    public async Task<ActionResult<EventActivityResponse>> CreateActivity(Guid eventId, EventActivityRequest req, CancellationToken ct)
+    {
+        if (req.EndsAt <= req.StartsAt) return ValidationFailure(nameof(req.EndsAt), "O término deve ser posterior ao início.");
+        if (!Enum.IsDefined(req.Kind)) return ValidationFailure(nameof(req.Kind), "Escolha palestra ou atividade.");
+        var ev = await db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId, ct);
+        if (ev is null) return NotFound();
+        if (req.StartsAt < ev.StartsAt || req.EndsAt > ev.EndsAt)
+            return ValidationFailure(nameof(req.StartsAt), "O horário deve ficar dentro do período do evento.");
+        var personIds = (req.PersonIds ?? []).Distinct().ToArray();
+        var validPeople = await db.EventMemberships.Where(m => m.EventId == eventId && m.Status == MembershipStatus.Active
+                && personIds.Contains(m.UserId))
+            .Select(m => m.UserId).ToListAsync(ct);
+        if (validPeople.Count != personIds.Length)
+            return ValidationFailure(nameof(req.PersonIds), "Vincule apenas pessoas ativas neste evento.");
+
+        var activity = new EventActivity
+        {
+            EventId = eventId, Kind = req.Kind, Title = req.Title.Trim(), Description = Mapping.Clean(req.Description),
+            Location = req.Location.Trim(), StartsAt = req.StartsAt.ToUniversalTime(), EndsAt = req.EndsAt.ToUniversalTime(),
+            People = personIds.Select(id => new EventActivityPerson { UserId = id }).ToList(),
+        };
+        db.EventActivities.Add(activity);
+        db.AuditLogs.Add(Audit(eventId, "event.activity.create", nameof(EventActivity), activity.Id, activity.Title));
+        await db.SaveChangesAsync(ct);
+        return Created($"/api/events/{eventId}/activities", new EventActivityResponse(activity.Id, activity.Kind,
+            activity.Title, activity.Description, activity.Location, activity.StartsAt, activity.EndsAt, []));
+    }
+
+    [HttpPut("events/{eventId:guid}/activities/{activityId:guid}"), Authorize(Policy = Policies.EventOrganizer)]
+    public async Task<ActionResult<EventActivityResponse>> UpdateActivity(Guid eventId, Guid activityId,
+        EventActivityRequest req, CancellationToken ct)
+    {
+        if (req.EndsAt <= req.StartsAt) return ValidationFailure(nameof(req.EndsAt), "O término deve ser posterior ao início.");
+        if (!Enum.IsDefined(req.Kind)) return ValidationFailure(nameof(req.Kind), "Escolha palestra ou atividade.");
+        var activity = await db.EventActivities.Include(a => a.People)
+            .FirstOrDefaultAsync(a => a.Id == activityId && a.EventId == eventId, ct);
+        if (activity is null) return NotFound();
+        var ev = await db.Events.AsNoTracking().Where(e => e.Id == eventId)
+            .Select(e => new { e.StartsAt, e.EndsAt }).FirstOrDefaultAsync(ct);
+        if (ev is null) return NotFound();
+        if (req.StartsAt < ev.StartsAt || req.EndsAt > ev.EndsAt)
+            return ValidationFailure(nameof(req.StartsAt), "O horário deve ficar dentro do período do evento.");
+        var personIds = (req.PersonIds ?? []).Distinct().ToArray();
+        var validPeople = await db.EventMemberships.Where(m => m.EventId == eventId && m.Status == MembershipStatus.Active
+                && personIds.Contains(m.UserId))
+            .Select(m => m.UserId).ToListAsync(ct);
+        if (validPeople.Count != personIds.Length)
+            return ValidationFailure(nameof(req.PersonIds), "Vincule apenas pessoas ativas neste evento.");
+
+        activity.Kind = req.Kind;
+        activity.Title = req.Title.Trim();
+        activity.Description = Mapping.Clean(req.Description);
+        activity.Location = req.Location.Trim();
+        activity.StartsAt = req.StartsAt.ToUniversalTime();
+        activity.EndsAt = req.EndsAt.ToUniversalTime();
+        var existingPeople = activity.People.ToDictionary(person => person.UserId);
+        foreach (var person in activity.People.Where(person => !personIds.Contains(person.UserId)).ToList())
+        {
+            db.EventActivityPeople.Remove(person);
+            activity.People.Remove(person);
+        }
+        foreach (var userId in personIds.Where(id => !existingPeople.ContainsKey(id)))
+            activity.People.Add(new EventActivityPerson { ActivityId = activityId, UserId = userId });
+        db.AuditLogs.Add(Audit(eventId, "event.activity.update", nameof(EventActivity), activity.Id, activity.Title));
+        await db.SaveChangesAsync(ct);
+        return new EventActivityResponse(activity.Id, activity.Kind, activity.Title, activity.Description,
+            activity.Location, activity.StartsAt, activity.EndsAt, []);
+    }
+
+    [HttpDelete("events/{eventId:guid}/activities/{activityId:guid}"), Authorize(Policy = Policies.EventOrganizer)]
+    public async Task<IActionResult> DeleteActivity(Guid eventId, Guid activityId, CancellationToken ct)
+    {
+        var activity = await db.EventActivities.FirstOrDefaultAsync(a => a.Id == activityId && a.EventId == eventId, ct);
+        if (activity is null) return NotFound();
+        db.EventActivities.Remove(activity);
+        db.AuditLogs.Add(Audit(eventId, "event.activity.delete", nameof(EventActivity), activity.Id, activity.Title));
+        await db.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
     [HttpPost("events/{eventId:guid}/maps"), Authorize(Policy = Policies.EventOrganizer), Consumes("multipart/form-data")]
     [RequestSizeLimit(15_000_000)]
     public async Task<ActionResult<EventMapResponse>> AddMap(Guid eventId, CancellationToken ct)

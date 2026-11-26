@@ -14,6 +14,29 @@ public class Event
 
     public ICollection<EventMembership> Memberships { get; set; } = new List<EventMembership>();
     public ICollection<EventMap> Maps { get; set; } = new List<EventMap>();
+    public ICollection<EventActivity> Activities { get; set; } = new List<EventActivity>();
+}
+
+public class EventActivity
+{
+    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public Guid EventId { get; set; }
+    public Event Event { get; set; } = null!;
+    public EventActivityKind Kind { get; set; } = EventActivityKind.Activity;
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string Location { get; set; } = string.Empty;
+    public DateTimeOffset StartsAt { get; set; }
+    public DateTimeOffset EndsAt { get; set; }
+    public ICollection<EventActivityPerson> People { get; set; } = new List<EventActivityPerson>();
+}
+
+public class EventActivityPerson
+{
+    public Guid ActivityId { get; set; }
+    public EventActivity Activity { get; set; } = null!;
+    public Guid UserId { get; set; }
+    public ApplicationUser User { get; set; } = null!;
 }
 
 public class EventMap

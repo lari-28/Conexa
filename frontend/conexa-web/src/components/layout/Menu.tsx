@@ -19,6 +19,7 @@ export function useMenuGroups(): MenuGroup[] {
         key: 'explorar', label: 'Explorar', title: 'Explorar o evento',
         description: 'Descubra estandes, pessoas e conversas do evento.',
         items: [
+          { to: '/programacao', label: 'Programação', hint: 'Palestras, atividades, horários e locais' },
           { to: '/empresas', label: 'Estandes', hint: 'Expositores e o que cada um oferece' },
           { to: '/participantes', label: 'Pessoas', hint: 'Participantes do evento' },
           { to: '/forum', label: 'Comunidade', hint: 'Dúvidas, opiniões e conversas' },
@@ -42,6 +43,7 @@ export function useMenuGroups(): MenuGroup[] {
           description: 'Configure o evento e cuide de quem participa.',
           items: [
             { to: '/organizador/evento', label: 'Dados do evento', hint: 'Nome, datas, local e situação' },
+            { to: '/organizador/programacao', label: 'Programação', hint: 'Cadastre palestras e atividades do evento' },
             { to: '/organizador/participantes', label: 'Participantes', hint: 'Quem está no evento e com qual papel' },
             { to: '/organizador/convites', label: 'Convites', hint: 'Links de cadastro para visitantes e expositores' },
             { to: '/organizador/moderacao', label: 'Moderação', hint: 'Denúncias e conteúdo da comunidade' },

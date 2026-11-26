@@ -9,3 +9,4 @@ public enum ReportTargetType { Post, Comment, Profile }
 public enum ReportStatus { Open, Dismissed, ActionTaken }
 public enum TagStatus { Suggested, Approved, Rejected }
 public enum VisitTimeframe { Exploring, ThisQuarter, ThisMonth, Now }
+public enum EventActivityKind { Talk, Activity }

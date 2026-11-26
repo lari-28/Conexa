@@ -22,9 +22,9 @@ const bottomLinks = [
 ];
 const participantBottomLinks = [
   home,
+  { to: '/programacao', label: 'Programação', icon: svg('M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zM8 14h3m2 0h3') },
   bottomLinks[2],
   bottomLinks[1],
-  { to: '/forum', label: 'Comunidade', icon: svg('M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8A8.5 8.5 0 018.7 3.9a8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z') },
 ];
 
 export function AppLayout() {

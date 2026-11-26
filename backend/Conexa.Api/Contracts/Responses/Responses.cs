@@ -11,6 +11,9 @@ public record AuthResponse(string Token, DateTimeOffset ExpiresAt, MeResponse Us
 public record EventResponse(Guid Id, string Name, string? Description, DateTimeOffset StartsAt,
     DateTimeOffset EndsAt, string? Location, EventStatus Status);
 public record EventMapResponse(Guid Id, string Description, string FileName, string ImageDataUrl, DateTimeOffset CreatedAt);
+public record EventActivityPersonResponse(Guid UserId, string DisplayName, string? Title, string? CompanyName, EventRole RoleInEvent);
+public record EventActivityResponse(Guid Id, EventActivityKind Kind, string Title, string? Description,
+    string Location, DateTimeOffset StartsAt, DateTimeOffset EndsAt, IReadOnlyList<EventActivityPersonResponse> People);
 public record MyEventResponse(EventResponse Event, EventRole RoleInEvent);
 
 public record PrivacyResponse(bool EmailVisible, bool PhoneVisible, string? Phone, bool ConsentGiven);
