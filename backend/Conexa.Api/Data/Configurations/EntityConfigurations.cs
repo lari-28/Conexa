@@ -65,6 +65,31 @@ public class EventMapConfiguration : IEntityTypeConfiguration<EventMap>
     }
 }
 
+public class EventActivityConfiguration : IEntityTypeConfiguration<EventActivity>
+{
+    public void Configure(EntityTypeBuilder<EventActivity> b)
+    {
+        b.HasKey(x => x.Id);
+        b.HasOne(x => x.Event).WithMany(e => e.Activities).HasForeignKey(x => x.EventId).OnDelete(DeleteBehavior.Cascade);
+        b.Property(x => x.Kind).HasConversion<string>().HasMaxLength(20);
+        b.Property(x => x.Title).HasMaxLength(200).IsRequired();
+        b.Property(x => x.Description).HasMaxLength(2000);
+        b.Property(x => x.Location).HasMaxLength(200).IsRequired();
+        b.HasIndex(x => new { x.EventId, x.StartsAt });
+    }
+}
+
+public class EventActivityPersonConfiguration : IEntityTypeConfiguration<EventActivityPerson>
+{
+    public void Configure(EntityTypeBuilder<EventActivityPerson> b)
+    {
+        b.HasKey(x => new { x.ActivityId, x.UserId });
+        b.HasOne(x => x.Activity).WithMany(a => a.People).HasForeignKey(x => x.ActivityId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        b.HasIndex(x => x.UserId);
+    }
+}
+
 public class EventMembershipConfiguration : IEntityTypeConfiguration<EventMembership>
 {
     public void Configure(EntityTypeBuilder<EventMembership> b)

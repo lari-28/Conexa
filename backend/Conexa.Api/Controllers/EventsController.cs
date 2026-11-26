@@ -12,6 +12,24 @@ public class EventsController(ApplicationDbContext db) : ApiControllerBase
             $"data:image/png;base64,{Convert.ToBase64String(m.Image)}", m.CreatedAt)).ToList();
     }
 
+    [HttpGet("{eventId:guid}/activities"), Authorize(Policy = Policies.EventMember)]
+    public async Task<ActionResult<List<EventActivityResponse>>> Activities(Guid eventId, CancellationToken ct)
+    {
+        var activities = await db.EventActivities.AsNoTracking().Where(a => a.EventId == eventId)
+            .Include(a => a.People).ThenInclude(p => p.User).ThenInclude(u => u.Profile)
+            .OrderBy(a => a.StartsAt).ThenBy(a => a.Title).ToListAsync(ct);
+        var userIds = activities.SelectMany(a => a.People).Select(p => p.UserId).Distinct().ToArray();
+        var roles = await db.EventMemberships.AsNoTracking()
+            .Where(m => m.EventId == eventId && userIds.Contains(m.UserId))
+            .ToDictionaryAsync(m => m.UserId, m => m.RoleInEvent, ct);
+
+        return activities.Select(a => new EventActivityResponse(a.Id, a.Kind, a.Title, a.Description, a.Location,
+            a.StartsAt, a.EndsAt, a.People.Select(p => new EventActivityPersonResponse(p.UserId,
+                p.User.DisplayName, p.User.Profile == null ? null : p.User.Profile.JobTitle,
+                p.User.Profile == null ? null : p.User.Profile.CompanyName,
+                roles.GetValueOrDefault(p.UserId, EventRole.Participant))).ToList())).ToList();
+    }
+
     /// <summary>Eventos do usuário (administrador vê todos os não arquivados).</summary>
     [HttpGet("mine")]
     public async Task<ActionResult<List<MyEventResponse>>> Mine(CancellationToken ct)

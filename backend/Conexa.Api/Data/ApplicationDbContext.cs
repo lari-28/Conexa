@@ -9,6 +9,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ContactPrivacy> ContactPrivacies => Set<ContactPrivacy>();
     public DbSet<Event> Events => Set<Event>();
     public DbSet<EventMap> EventMaps => Set<EventMap>();
+    public DbSet<EventActivity> EventActivities => Set<EventActivity>();
+    public DbSet<EventActivityPerson> EventActivityPeople => Set<EventActivityPerson>();
     public DbSet<EventMembership> EventMemberships => Set<EventMembership>();
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<CompanyMembership> CompanyMemberships => Set<CompanyMembership>();

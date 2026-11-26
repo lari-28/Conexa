@@ -26,6 +26,8 @@ import { VisitorProfilePage } from '../pages/VisitorProfilePage';
 import { ExhibitorBoothPage } from '../pages/ExhibitorBoothPage';
 import { AdminEventsPage } from '../pages/admin/AdminEventsPage';
 import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
+import { ProgramPage } from '../pages/ProgramPage';
+import { OrganizerProgramPage } from '../pages/organizer/OrganizerProgramPage';
 
 export function AppRoutes() {
   return (
@@ -39,6 +41,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/evento" element={<EventPage />} />
+          <Route path="/programacao" element={<ProgramPage />} />
           <Route path="/participantes" element={<ParticipantsPage />} />
           <Route path="/participantes/:id" element={<ParticipantDetailPage />} />
           <Route path="/avisos" element={<NotificationsPage />} />
@@ -52,6 +55,7 @@ export function AppRoutes() {
 
           <Route element={<ProtectedRoute roles={['Organizer', 'PlatformAdmin']} />}>
             <Route path="/organizador/evento" element={<OrganizerEventPage />} />
+            <Route path="/organizador/programacao" element={<OrganizerProgramPage />} />
             <Route path="/organizador/participantes" element={<OrganizerMembersPage />} />
             <Route path="/organizador/painel" element={<OrganizerDashboardPage />} />
             <Route path="/organizador/taxonomia" element={<OrganizerTaxonomyPage />} />

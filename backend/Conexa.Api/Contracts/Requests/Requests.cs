@@ -54,6 +54,15 @@ public record EventRequest(
     [StringLength(200)] string? Location,
     EventStatus? Status = null);
 
+public record EventActivityRequest(
+    EventActivityKind Kind,
+    [Required, StringLength(200, MinimumLength = 2)] string Title,
+    [StringLength(2000)] string? Description,
+    [Required, StringLength(200, MinimumLength = 2)] string Location,
+    DateTimeOffset StartsAt,
+    DateTimeOffset EndsAt,
+    List<Guid>? PersonIds);
+
 public record AddMemberRequest([Required, EmailAddress] string Email, EventRole RoleInEvent = EventRole.Participant);
 
 public record UpdateMemberRequest(MembershipStatus? Status, EventRole? RoleInEvent);

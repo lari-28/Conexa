@@ -463,6 +463,40 @@ input[type="checkbox"], input[type="radio"] { width: 1rem; min-height: 1rem; mar
 .event-map-upload-row { display: grid; gap: .75rem; align-items: end; padding-bottom: .75rem; border-bottom: 1px solid var(--border); }
 @media (min-width: 700px) { .event-map-upload-row { grid-template-columns: 1fr 1fr auto; } }
 
+.program-page, .organizer-program-page { width: 100%; min-width: 0; }
+.program-days { gap: 1.5rem; }
+.program-day { gap: .75rem; }
+.program-day > h2 { margin: 0; padding-bottom: .6rem; border-bottom: 1px solid var(--border); color: var(--chrome); text-transform: capitalize; }
+.program-slot { display: grid; grid-template-columns: 4.25rem minmax(0, 1fr); gap: .75rem; align-items: start; }
+.program-slot-time { display: flex; flex-direction: column; gap: .3rem; padding-top: .9rem; color: var(--coral-text); font-variant-numeric: tabular-nums; font-weight: 700; }
+.program-slot-time span { color: var(--muted); font-size: .67rem; line-height: 1.25; font-weight: 500; }
+.program-slot-items { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; min-width: 0; }
+.program-activity { min-width: 0; background: var(--surface); }
+.program-activity-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
+.program-activity > h3 { color: var(--ink); font-size: 1.05rem; }
+.program-activity > p { margin: 0; }
+.program-location { display: flex; flex-wrap: wrap; gap: .35rem .6rem; }
+.program-location strong { color: var(--chrome); }
+.program-speakers { display: flex; flex-direction: column; gap: .35rem; padding-top: .65rem; border-top: 1px solid var(--border); }
+.program-speakers > strong { color: var(--chrome); font-size: .85rem; }
+.program-speakers ul { display: flex; flex-direction: column; gap: .45rem; }
+.program-speakers li { display: flex; flex-direction: column; gap: .1rem; }
+.program-time-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; }
+.program-people-field { display: flex; flex-direction: column; gap: .65rem; }
+.program-people-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem; }
+.program-people-header > strong { color: var(--chrome); }
+.program-people-list { display: flex; max-height: 300px; flex-direction: column; overflow: auto; border: 1px solid var(--border); border-radius: var(--control-radius); }
+.program-person-option { display: flex; min-height: 48px; padding: .5rem .7rem; align-items: center; gap: .65rem; border-bottom: 1px solid var(--border); cursor: pointer; }
+.program-person-option:last-child { border-bottom: 0; }
+.program-person-option input { width: 1.1rem; min-height: 1.1rem; flex: 0 0 auto; }
+.program-person-option > span:nth-of-type(1) { min-width: 0; flex: 1; }
+
+@media (min-width: 700px) {
+  .program-slot { grid-template-columns: 5.5rem minmax(0, 1fr); gap: 1rem; }
+  .program-slot-items { grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); }
+  .program-time-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (min-width: 768px) {
   .shell-participant .content { padding: 2rem 1.5rem 3rem; gap: 1.25rem; }
   .participant-home { gap: 1.25rem; }
