@@ -9,12 +9,14 @@ import { profileApi, visitorProfileApi } from '../services/api/endpoints';
 import { useAsync } from '../hooks/useAsync';
 import { formatDateTime, roleLabel } from '../utils/format';
 import { ExhibitorHome } from './ExhibitorHome';
+import { OrganizerDashboardPage } from './organizer/OrganizerDashboardPage';
 
 export function EventPage() {
   const ev = useCurrentEvent();
   const { roleInEvent } = useEvent();
   if (roleInEvent === 'Participant') return <ParticipantHome event={ev} />;
   if (roleInEvent === 'Exhibitor') return <ExhibitorHome event={ev} />;
+  if (roleInEvent === 'Organizer') return <OrganizerDashboardPage />;
 
   const profile = profileByRole(roleInEvent);
   const shortcuts = [
@@ -37,14 +39,7 @@ export function EventPage() {
         <div><Link className="btn btn-primary" to={profile.nextPath}>Continuar</Link></div>
       </Card>
 
-      {roleInEvent === 'Organizer' ? (
-          <div className="ai-block">
-            <span className="ai-tag">Painel</span>
-            <h3>Resumo do evento</h3>
-            <p className="muted" style={{ margin: 0 }}>Demanda x oferta por tema, lacunas, concentração de exposição e check-ins.</p>
-            <div><Link className="btn btn-primary" to="/organizador/painel">Abrir painel</Link></div>
-          </div>
-        ) : <BoothMatchesBlock eventId={ev.id} />}
+      <BoothMatchesBlock eventId={ev.id} />
 
       <div className="grid">
         {shortcuts.map((s) => (
