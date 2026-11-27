@@ -28,6 +28,7 @@ import { AdminEventsPage } from '../pages/admin/AdminEventsPage';
 import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
 import { ProgramPage } from '../pages/ProgramPage';
 import { OrganizerProgramPage } from '../pages/organizer/OrganizerProgramPage';
+import { DesignSystemPage } from '../pages/DesignSystemPage';
 
 export function AppRoutes() {
   return (
@@ -37,6 +38,7 @@ export function AppRoutes() {
       <Route path="/convite/:code" element={<InvitePage />} />
       <Route path="/cadastro" element={<RegisterChoicePage />} />
       <Route path="/cadastro/:tipo" element={<RegisterPage />} />
+      <Route path="/ui-kit" element={<DesignSystemPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>

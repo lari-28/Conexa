@@ -14,6 +14,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<EventMembership> EventMemberships => Set<EventMembership>();
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<CompanyMembership> CompanyMemberships => Set<CompanyMembership>();
+    public DbSet<BoothComment> BoothComments => Set<BoothComment>();
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<Reaction> Reactions => Set<Reaction>();

@@ -1,15 +1,26 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useCurrentEvent } from '../features/events/EventContext';
 import { companiesApi } from '../services/api/endpoints';
 import { useAsync } from '../hooks/useAsync';
 import { Avatar, Badge, Card } from '../components/ui';
 import { AsyncView } from '../components/common';
 import { EventMaps } from '../components/EventMaps';
+import { BoothComments } from '../features/companies/BoothComments';
 
 export function CompanyDetailPage() {
   const { id = '' } = useParams();
+  const location = useLocation();
   const ev = useCurrentEvent();
   const { data: c, loading, error } = useAsync(() => companiesApi.get(ev.id, id), [ev.id, id]);
+
+  useEffect(() => {
+    if (!c || location.hash !== '#booth-comments') return;
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById('booth-comments')?.scrollIntoView({ block: 'start' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [c, location.hash]);
 
   return (
     <>
@@ -48,6 +59,7 @@ export function CompanyDetailPage() {
           </>
         )}
       </AsyncView>
+      {c && <BoothComments eventId={ev.id} companyId={c.id} companyName={c.name} />}
       <EventMaps eventId={ev.id} />
     </>
   );

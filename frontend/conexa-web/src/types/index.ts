@@ -178,6 +178,21 @@ export interface PostComment {
   createdAt: string;
   canDelete: boolean;
 }
+export interface BoothComment {
+  id: string;
+  companyId: string;
+  author: Author;
+  text: string;
+  createdAt: string;
+  canDelete: boolean;
+}
+export interface BoothCommentsPage {
+  canView: boolean;
+  items: BoothComment[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
 
 export interface Member {
   userId: string;

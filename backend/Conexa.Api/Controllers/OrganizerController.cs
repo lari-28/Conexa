@@ -229,6 +229,8 @@ public class OrganizerController(ApplicationDbContext db, IEventAccessService ac
         var profileIds = rows.Where(r => r.TargetType == ReportTargetType.Profile).Select(r => r.TargetId).ToList();
         var posts = await db.Posts.Where(p => postIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => p.Text, ct);
         var comments = await db.Comments.Where(c => commentIds.Contains(c.Id)).ToDictionaryAsync(c => c.Id, c => c.Text, ct);
+        var boothComments = await db.BoothComments.Where(c => commentIds.Contains(c.Id)).ToListAsync(ct);
+        foreach (var boothComment in boothComments) comments.TryAdd(boothComment.Id, boothComment.Text);
         var names = await db.Users.Where(u => profileIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.DisplayName, ct);
 
         string? Preview(ReportTargetType t, Guid id)
@@ -256,7 +258,7 @@ public class OrganizerController(ApplicationDbContext db, IEventAccessService ac
         if (req.Status == ReportStatus.Open)
             return ValidationFailure(nameof(req.Status), "Informe Dismissed ou ActionTaken.");
 
-        Post? post = null; Comment? comment = null; Guid? authorId = null;
+        Post? post = null; Comment? comment = null; BoothComment? boothComment = null; Guid? authorId = null;
         switch (report.TargetType)
         {
             case ReportTargetType.Post:
@@ -265,7 +267,8 @@ public class OrganizerController(ApplicationDbContext db, IEventAccessService ac
                 break;
             case ReportTargetType.Comment:
                 comment = await db.Comments.FindAsync(new object[] { report.TargetId }, ct);
-                authorId = comment?.AuthorId;
+                if (comment is null) boothComment = await db.BoothComments.FindAsync(new object[] { report.TargetId }, ct);
+                authorId = comment?.AuthorId ?? boothComment?.AuthorId;
                 break;
             default:
                 authorId = report.TargetId;
@@ -276,6 +279,7 @@ public class OrganizerController(ApplicationDbContext db, IEventAccessService ac
         {
             if (post is not null) post.Status = ContentStatus.Hidden;
             if (comment is not null) comment.Status = ContentStatus.Hidden;
+            if (boothComment is not null) boothComment.Status = ContentStatus.Hidden;
         }
         if (req.DisableAuthorAccess && authorId is { } aid && aid != CurrentUserId)
         {

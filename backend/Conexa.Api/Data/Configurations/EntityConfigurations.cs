@@ -157,6 +157,18 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
     }
 }
 
+public class BoothCommentConfiguration : IEntityTypeConfiguration<BoothComment>
+{
+    public void Configure(EntityTypeBuilder<BoothComment> b)
+    {
+        b.Property(x => x.Text).HasMaxLength(1000).IsRequired();
+        b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+        b.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId);
+        b.HasOne(x => x.Author).WithMany().HasForeignKey(x => x.AuthorId).OnDelete(DeleteBehavior.Restrict);
+        b.HasIndex(x => new { x.CompanyId, x.CreatedAt });
+    }
+}
+
 public class ReactionConfiguration : IEntityTypeConfiguration<Reaction>
 {
     public void Configure(EntityTypeBuilder<Reaction> b)
