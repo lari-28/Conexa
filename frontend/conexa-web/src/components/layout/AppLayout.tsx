@@ -25,6 +25,11 @@ const participantBottomLinks = [
   { to: '/programacao', label: 'Programação', icon: svg('M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zM8 14h3m2 0h3') },
   bottomLinks[2],
   bottomLinks[1],
+  { to: '/forum', label: 'Comunidade', icon: svg('M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8A8.5 8.5 0 018.7 3.9a8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z') },
+];
+const exhibitorBottomLinks = [
+  ...bottomLinks,
+  { to: '/evento/meu-estande', label: 'Meu estande', icon: svg('M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6') },
 ];
 
 export function AppLayout() {
@@ -50,11 +55,14 @@ export function AppLayout() {
   if (!user) return null;
 
   const isParticipant = roleInEvent === 'Participant';
-  const visibleBottomLinks = isParticipant ? participantBottomLinks : bottomLinks;
+  const isExhibitor = roleInEvent === 'Exhibitor';
+  const showSpaceInAvatar = isParticipant || isExhibitor;
+  const visibleBottomLinks = isParticipant ? participantBottomLinks : isExhibitor ? exhibitorBottomLinks : bottomLinks;
+  const spaceItems = groups.find((group) => group.key === 'meu-espaco')?.items ?? [];
   const go = (to: string) => { setMenu(false); navigate(to); };
 
   return (
-    <div className={`shell ${isParticipant ? 'shell-participant' : ''}`}>
+    <div className={`shell ${isParticipant ? 'shell-participant' : ''} ${isExhibitor ? 'shell-exhibitor' : ''}`}>
       <header className="topbar">
         <div className="topbar-inner">
           <span className="logo" onClick={() => go('/evento')}>CONEXA</span>
@@ -81,7 +89,13 @@ export function AppLayout() {
         {menu && (
           <div className="drawer" role="menu">
             <p className="muted">{user.displayName}<br /><small>{user.email}</small></p>
-            <button className="drawer-link" onClick={() => go('/perfil')}>Meu perfil e privacidade</button>
+            {showSpaceInAvatar ? <>
+              <div className="drawer-account-links">
+                {spaceItems.map((item) => <button key={item.to} className="drawer-link drawer-account-link" role="menuitem"
+                  onClick={() => go(item.to)}><strong>{item.label}</strong><small>{item.hint}</small></button>)}
+              </div>
+              <button className="drawer-link drawer-default-profile" role="menuitem" onClick={() => go('/perfil')}>Meu perfil e privacidade</button>
+            </> : <button className="drawer-link" role="menuitem" onClick={() => go('/perfil')}>Meu perfil e privacidade</button>}
             <button className="drawer-link danger" onClick={() => { setMenu(false); void logout().then(() => navigate('/login')); }}>Sair</button>
           </div>
         )}
@@ -100,11 +114,11 @@ export function AppLayout() {
         {visibleBottomLinks.map((l) => (
           <NavLink key={l.to} to={l.to}>{l.icon}<small>{l.label}</small></NavLink>
         ))}
-        <button type="button" className="bottom-menu" onClick={() => setSheet(true)} aria-label="Abrir menu">
-          {svg('M4 6h16M4 12h16M4 18h16')}<small>{isParticipant ? 'Mais' : 'Menu'}</small>
-        </button>
+        {!showSpaceInAvatar && <button type="button" className="bottom-menu" onClick={() => setSheet(true)} aria-label="Abrir menu">
+          {svg('M4 6h16M4 12h16M4 18h16')}<small>Menu</small>
+        </button>}
       </nav>
-      {sheet && <MobileMenu groups={groups} onClose={() => setSheet(false)} />}
+      {sheet && !showSpaceInAvatar && <MobileMenu groups={groups} onClose={() => setSheet(false)} />}
     </div>
   );
 }
