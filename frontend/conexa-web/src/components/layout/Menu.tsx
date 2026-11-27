@@ -25,17 +25,17 @@ export function useMenuGroups(): MenuGroup[] {
           { to: '/forum', label: 'Comunidade', hint: 'Dúvidas, opiniões e conversas' },
         ],
       },
-      {
+    ];
+    if (roleInEvent !== 'Organizer') {
+      groups.push({
         key: 'meu-espaco', label: 'Meu espaço', title: 'Meu espaço',
         description: 'O que é seu: perfil, autorizações e avisos.',
         items: [
           ...(roleInEvent === 'Participant' ? [{ to: '/evento/meu-perfil', label: 'Meu perfil no evento', hint: 'Objetivo, temas e autorizações de uso dos dados' }] : []),
-          ...(roleInEvent === 'Exhibitor' ? [{ to: '/evento/meu-estande', label: 'Meu estande', hint: 'Oferta, cliente ideal, temas e QR de check-in' }] : []),
           { to: '/perfil', label: 'Perfil e privacidade', hint: 'Seus dados e quais contatos aparecem' },
-          { to: '/avisos', label: 'Avisos', hint: 'Recomendações e leads' },
         ],
-      },
-    ];
+      });
+    }
     if (organizer) {
       groups.push(
         {

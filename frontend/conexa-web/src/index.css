@@ -81,6 +81,11 @@ blockquote { margin: .5rem 0; padding: .65rem .85rem; background: var(--indigo-s
 .drawer-link { padding: .7rem .5rem; background: none; border: 0; border-radius: var(--control-radius); color: var(--muted); font: inherit; text-align: left; cursor: pointer; }
 .drawer-link:hover { background: var(--indigo-soft); color: var(--indigo); }
 .drawer-link.danger { color: var(--danger); }
+.drawer-account-links { display: flex; flex-direction: column; }
+.drawer-account-link { display: flex; flex-direction: column; gap: .15rem; }
+.drawer-account-link strong { color: var(--ink); font-size: .9rem; font-weight: 600; }
+.drawer-account-link small { color: var(--muted); font-size: .76rem; line-height: 1.35; }
+.drawer-default-profile { display: none; }
 .content { display: flex; max-width: 1280px; margin: 0 auto; padding: 1.5rem 1rem 2rem; flex-direction: column; gap: 1.25rem; }
 .bottom-nav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 20; display: flex; padding-bottom: env(safe-area-inset-bottom); background: var(--surface); border-top: 1px solid var(--border); }
 .bottom-nav a { display: flex; min-height: var(--nav-h); flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; color: var(--muted); text-decoration: none; }
@@ -264,6 +269,21 @@ input[type="checkbox"], input[type="radio"] { width: 1rem; min-height: 1rem; mar
   .mega-wrap { display: flex; }
   .bottom-nav, .sheet { display: none; }
   .shell { padding-bottom: 0; }
+  .drawer {
+    position: absolute;
+    top: 100%;
+    right: max(calc((100vw - 1280px) / 2 + 1rem), 1rem);
+    width: min(340px, calc(100vw - 2rem));
+    max-width: none;
+    margin: 0;
+    padding: .65rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: 0 18px 40px rgb(0 0 0 / 42%);
+  }
+  .drawer-account-links { display: none; }
+  .drawer-default-profile { display: block; }
 }
 @media (max-width: 900px) {
   .mega-panel { grid-template-columns: 1fr; gap: 1rem; padding: 1.25rem; }
@@ -297,6 +317,8 @@ input[type="checkbox"], input[type="radio"] { width: 1rem; min-height: 1rem; mar
 .shell-participant .bottom-menu small { font-size: .62rem; white-space: nowrap; }
 .shell-participant .bottom-menu { color: var(--muted); }
 .shell-participant .bottom-menu:focus-visible { outline: 2px solid var(--coral); outline-offset: -3px; }
+.shell-exhibitor .bottom-nav a { min-width: 0; }
+.shell-exhibitor .bottom-nav a small { font-size: .62rem; white-space: nowrap; }
 
 .participant-home { display: grid; gap: 1rem; }
 .participant-welcome { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: .75rem; }
