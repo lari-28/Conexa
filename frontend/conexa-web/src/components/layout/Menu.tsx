@@ -57,13 +57,6 @@ export function useMenuGroups(): MenuGroup[] {
             { to: '/organizador/importacao', label: 'Importar expositores', hint: 'Catálogo em planilha CSV' },
           ],
         },
-        {
-          key: 'analises', label: 'Análises', title: 'Análises do evento',
-          description: 'Entenda o que o evento gerou.',
-          items: [
-            { to: '/organizador/painel', label: 'Painel do evento', hint: 'Lacunas, demanda × oferta, exposição e check-ins' },
-          ],
-        },
       );
     }
     if (admin) {
