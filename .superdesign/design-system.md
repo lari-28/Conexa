@@ -1,84 +1,83 @@
-# CONEXA Design System — Circuit Black Racing Chrome
+# CONEXA Design System — EventHub Operations
 
-## Product and audience
+## Fonte visual
 
-CONEXA is a responsive event-networking product for attendees, exhibitors, organizers, and platform administrators. Core experiences include event overview, participant and company discovery, profiles, event discussion, moderation, and event administration. Keep the interface professional, social, and easy to scan; motorsport styling is a visual language, not a literal race-control console.
+- **Projeto Superdesign:** `a5e3f57c-3a50-4610-9b7b-0563f8758408`
+- **Referência consultada:** preview `EventHub Admin Dashboard` no Superdesign, incluindo a resposta de criação e a renderização em desktop.
+- **Elementos observados:** sidebar escura com navegação agrupada; cabeçalho com busca e contexto; cartões de métricas; grade visual de eventos; navegação inferior no celular; superfícies translúcidas e transições suaves.
+- **Paleta explícita na especificação do projeto:** fundo `#121212`, ciano `#00D4FF`, violeta `#9D4EDD`, verde `#00FF88`.
+- Tons de superfície e semânticos abaixo foram definidos para reproduzir a hierarquia do preview e manter legibilidade; não foram apresentados como tokens explícitos pelo Superdesign.
 
-## Visual direction
+## Produto e direção
 
-Use the **Circuit Black Racing Chrome** direction: a precise, high-contrast dark interface with carbon-black surfaces, polished cool-chrome details, restrained racing-red signals, and fine circuit-inspired linework. The result should feel engineered and premium, balancing trackside energy with practical product usability.
+CONEXA conecta participantes, expositores e organizadores de eventos. A interface deve parecer um centro moderno de operações: escura, focada, rica em dados e fácil de percorrer. A energia vem dos acentos ciano, violeta e verde em pontos específicos, enquanto o conteúdo continua sendo o foco.
 
-- Use deep black and graphite as the dominant surfaces; distinguish layers with subtle tonal shifts and hairline borders.
-- Use silver/chrome for structural labels, dividers, metallic edge details, and quiet iconography. Metallic gradients are allowed only as subtle highlights, never as large glowing backgrounds.
-- Reserve one vivid racing red for primary actions, selected states, and a few live/event indicators. Do not use competing neon accents.
-- Use sparse technical motifs: thin circuit traces, small telemetry labels, registration marks, and restrained check patterns. Keep decoration out of reading and input areas.
-- Favor crisp geometry, compact labels, clear alignment, deliberate negative space, and one strong editorial heading.
-- Do not use glassmorphism, purple/blue glows, gradients as background fills, distressed textures, stock photography, or oversized motorsport imagery.
-- Keep the product identity as the text wordmark “CONEXA”; do not invent a pictorial logo or imitate any racing team, championship, or automotive brand.
+Use uma sidebar persistente em telas largas, um cabeçalho compacto para o evento e a conta, e uma área principal que prioriza informações e tarefas. Em telas estreitas, recolha a navegação lateral e preserve a barra inferior e a folha de navegação existentes. Cards devem agrupar métricas, eventos e conteúdo social sem competir entre si.
 
-The target is a polished, desktop-first component-library page that documents the actual shared UI in Portuguese. Organize it as a product UI kit with a compact category rail and a spacious catalog canvas. Show all reusable patterns together: navigation shell, buttons and states, fields, avatars, badges, cards, alerts, loading/empty states, pagination, modal, participant card, and forum post card. Use realistic CONEXA event content. Examples should look like functional product UI rather than code listings. Keep the page responsive and readable on mobile.
+Use superfícies translúcidas e desfoque de fundo em camadas de navegação, popovers e painéis elevados. Mantenha fundos de leitura e formulários sólidos. Não usar identidade de automobilismo, vermelho como cor de marca, glass em cada componente, brilho neon permanente ou decoração sem relação com dados e navegação.
 
 ## Tokens
 
-### Color
+### Cor
 
-- `canvas`: `#0B0D0F`
-- `surface`: `#111417`
-- `surface-raised`: `#191D21`
-- `surface-inset`: `#080A0C`
-- `ink`: `#F2F4F5`
-- `muted`: `#A1A8AE`
-- `subtle`: `#747C83`
-- `border`: `#343A40`
-- `chrome`: `#D7DCE0`
-- `chrome-shadow`: `#858D94`
-- `brand`: `#E23B32`
-- `brand-strong`: `#BE2C26`
-- `brand-soft`: `#3A1918`
-- `danger`: `#F0645A`
-- `danger-soft`: `#351716`
-- `success`: `#71C895`
-- `success-soft`: `#15291D`
-- `warning`: `#E6B45A`
-- `warning-soft`: `#302718`
-- `info`: `#79BBD1`
-- `info-soft`: `#14262C`
+| Token | Valor | Uso |
+| --- | --- | --- |
+| `canvas` | `#121212` | Fundo geral |
+| `surface` | `#191A1D` | Cards e painéis |
+| `surface-raised` | `#222328` | Menus, hover e camadas elevadas |
+| `surface-inset` | `#101114` | Sidebar e campos |
+| `surface-glass` | `rgb(31 32 37 / 82%)` | Cabeçalho translúcido e overlays |
+| `ink` | `#F5F6F8` | Texto principal |
+| `muted` | `#A4A7B0` | Texto secundário |
+| `subtle` | `#737782` | Metadados e rótulos discretos |
+| `border` | `#33353D` | Bordas e divisores |
+| `cyan` | `#00D4FF` | Ação primária, seleção e links ativos |
+| `cyan-strong` | `#00A9CC` | Hover e variação de ação |
+| `cyan-soft` | `#07303A` | Fundo leve de seleção |
+| `purple` | `#9D4EDD` | Segunda série de dados e destaque de categoria |
+| `purple-soft` | `#2B1938` | Fundo leve violeta |
+| `green` | `#00FF88` | Confirmação, disponibilidade e métricas positivas |
+| `green-soft` | `#0B3324` | Fundo leve de sucesso |
+| `danger` | `#FF6B75` | Erros e ações destrutivas |
+| `warning` | `#FFCC66` | Atenção e pendências |
 
-Use red as a selective signal, not as a large surface. Use chrome or white for text and neutral borders. Keep muted text readable against its surface.
+Use ciano, violeta e verde como sinais separados. Não colorir cartões inteiros com os tons saturados. Status deve ter rótulo além da cor.
 
-### Typography
+### Tipografia
 
-- Use `IBM Plex Sans` (fallback: `Inter`, `ui-sans-serif`, `system-ui`) for interface text.
-- Use `IBM Plex Mono` (fallback: `ui-monospace`, `SFMono-Regular`, `monospace`) for small telemetry labels, IDs, timestamps, and technical metadata only.
-- Page title: 30–34px, semibold or bold; section title: 18–22px, semibold.
-- Body: 14–16px, regular; labels and metadata: 11–13px, medium, with restrained letter spacing.
-- Use tabular numerals for counts, event times, and IDs.
+- Interface: `Inter`, fallback `Segoe UI`, `ui-sans-serif`, `system-ui`.
+- Texto principal: 14–16px; labels e metadados: 11–13px.
+- Título da página: 28–34px; título de seção: 18–22px.
+- Use numerais tabulares em totais, datas, contagens e métricas.
+- Fonte monoespaçada fica restrita a IDs, horários técnicos e pequenos rótulos de dados.
 
-### Spacing, shape, and elevation
+### Layout, forma e movimento
 
-- Use a 4px base spacing scale: 4, 8, 12, 16, 24, 32, 48, 64px.
-- Main desktop content max width: 1280px; use a 12-column grid for the catalog.
-- Control height: 44px minimum; compact controls may be 36px when clearly secondary.
-- Inputs and buttons: 8px radius; cards and panels: 12px; status pills: fully rounded.
-- Use crisp hairline chrome/graphite borders as the default separation. Reserve subtle shadows for elevated menus and modals; avoid diffuse glows.
-- Focus state: a visible 2px chrome or racing-red ring with offset, chosen for contrast against the current surface.
+- Escala de espaçamento baseada em 4px: 4, 8, 12, 16, 24, 32, 48, 64px.
+- Sidebar desktop: aproximadamente 248px; conteúdo principal fluido, com largura máxima de 1500px.
+- Campos e botões: altura mínima de 44px; raio de 8px. Cards: raio de 12–16px. Pills: raio completo.
+- Separação por borda fina; sombras curtas e escuras em menus e modais. Desfoque de 14–20px apenas em superfícies sobrepostas.
+- Transições de 120–180ms; respeitar `prefers-reduced-motion`.
+- Breakpoint do shell: 1100px. Abaixo dele, usar navegação inferior e menu compacto.
 
-## Component behavior and accessibility
+## Componentes e acessibilidade
 
-- Buttons: primary, secondary, quiet, destructive, disabled, and loading examples. Primary may use racing red; ensure clear hover/focus/disabled states.
-- Fields: labeled text input, search, select, and textarea; show focus, helper, and validation examples.
-- Status: semantic success, warning, info, and error tones; never communicate status by color alone.
-- Cards: distinguish selectable directory cards from static content cards using border, typography, and interaction state rather than glow.
-- Modal: centered on desktop and bottom-sheet-like on mobile, with a clear close affordance.
-- Preserve keyboard focus visibility, semantic headings, labeled controls, and touch targets of at least 44px.
-- Use 120–180ms transitions sparingly; respect reduced-motion preferences. No flashing or fast animation.
+- Ações: primária ciano com texto escuro para contraste; secundária neutra; terciária sem fundo; destrutiva em tom de erro. Incluir hover, foco, loading e disabled.
+- Campos: rótulo persistente, placeholder auxiliar, erro junto ao campo e foco com contorno visível.
+- Sidebar: categorias e itens agrupados, item atual marcado por fundo sutil e filete ciano; ícone sempre acompanhado de texto.
+- Cards de métricas podem usar ciano, violeta e verde como pequenos indicadores, sem depender da cor para transmitir o valor.
+- Manter landmarks semânticos, navegação por teclado, foco visível, contraste de texto e alvos de toque de pelo menos 44px.
+- Mobile: preservar rótulos e área útil; não deixar filtros, ações ou textos longos causarem overflow.
 
-## Responsive layout
+## Página de biblioteca
 
-- Desktop reference: 1440px wide; compact left rail for library sections and a fluid content canvas.
-- Mobile reference: 390px wide; collapse the library rail into a top selector, stack examples, and keep app navigation touch-friendly.
-- The source app uses a 768px layout breakpoint; keep responsive behavior clear around that width.
+`/ui-kit` documenta em português os componentes compartilhados reais: shell e navegação, botões, campos, avatares, badges, cards, feedback, carregamento/vazio, paginação, modal, cartão de participante e padrão de publicação. Use conteúdo de exemplo do CONEXA Summit e mostre o padrão de sidebar/dashboard do projeto Superdesign. A biblioteca é uma referência de produto, não um bloco de códigos.
 
-## Source context precedence
+## Contexto de implementação
 
-The repository's `src/index.css` and existing React components document content, semantics, and behaviors, but their styling tokens are not the target style. This document is authoritative for the new visual direction. Keep source labels and product concepts accurate while restyling the visual system.
+- Aplicação: React 19 + TypeScript + Vite.
+- Tokens e padrões globais: `frontend/conexa-web/src/index.css`.
+- Shell autenticado: `frontend/conexa-web/src/components/layout/AppLayout.tsx`.
+- Componentes partilhados: `frontend/conexa-web/src/components/ui/index.tsx` e `frontend/conexa-web/src/components/common/index.tsx`.
+- Painel do organizador: `frontend/conexa-web/src/pages/organizer/OrganizerDashboardPage.tsx`.
+- Biblioteca visual: `frontend/conexa-web/src/pages/DesignSystemPage.tsx`.

@@ -1,6 +1,6 @@
 import { api } from './client';
 import type {
-  AdminUser, AuthResponse, CompanyDetail, CompanySummary, EventInfo, EventRole, MembershipStatus, Me,
+  AdminUser, AuthResponse, BoothComment, BoothCommentsPage, CompanyDetail, CompanySummary, EventInfo, EventRole, MembershipStatus, Me,
   Member, MyEvent, Paged, ParticipantDetail, ParticipantFilters, ParticipantSummary, Post, PostComment,
   Privacy, Profile, PublicProfile, ReactionType, Report, ReportStatus, ReportTargetType,
   LibrarySector, ReviewResult, SuggestionGroup, Tag, TagStatus, VisitorProfile, VisitTimeframe,
@@ -60,6 +60,11 @@ export const companiesApi = {
   create: (eventId: string, data: CompanyInput) => api.post<CompanyDetail>(`/api/events/${eventId}/companies`, data),
   update: (eventId: string, id: string, data: CompanyInput) => api.put<CompanyDetail>(`/api/events/${eventId}/companies/${id}`, data),
   setTags: (eventId: string, id: string, tagIds: string[]) => api.put<Tag[]>(`/api/events/${eventId}/companies/${id}/tags`, { tagIds }),
+  comments: (eventId: string, companyId: string) =>
+    api.get<BoothCommentsPage>(`/api/events/${eventId}/companies/${companyId}/comments`, { page: 1, pageSize: 100 }),
+  addComment: (eventId: string, companyId: string, text: string) =>
+    api.post<BoothComment>(`/api/events/${eventId}/companies/${companyId}/comments`, { text }),
+  deleteComment: (id: string) => api.delete<void>(`/api/comments/${id}`),
 };
 
 export interface CompanyInput {

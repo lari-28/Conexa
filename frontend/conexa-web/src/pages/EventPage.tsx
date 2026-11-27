@@ -3,16 +3,18 @@ import { useCurrentEvent, useEvent } from '../features/events/EventContext';
 import { Alert, Badge, Card, Loading } from '../components/ui';
 import { PageHeader } from '../components/common';
 import { profileByRole } from '../content/profiles';
-import { BoothMatchesBlock, LeadsBlock } from '../features/matching/MatchBlocks';
+import { BoothMatchesBlock } from '../features/matching/MatchBlocks';
 import { useAuth } from '../features/auth/AuthContext';
 import { profileApi, visitorProfileApi } from '../services/api/endpoints';
 import { useAsync } from '../hooks/useAsync';
 import { formatDateTime, roleLabel } from '../utils/format';
+import { ExhibitorHome } from './ExhibitorHome';
 
 export function EventPage() {
   const ev = useCurrentEvent();
   const { roleInEvent } = useEvent();
   if (roleInEvent === 'Participant') return <ParticipantHome event={ev} />;
+  if (roleInEvent === 'Exhibitor') return <ExhibitorHome event={ev} />;
 
   const profile = profileByRole(roleInEvent);
   const shortcuts = [
@@ -35,8 +37,7 @@ export function EventPage() {
         <div><Link className="btn btn-primary" to={profile.nextPath}>Continuar</Link></div>
       </Card>
 
-      {roleInEvent === 'Exhibitor' ? <LeadsBlock eventId={ev.id} />
-        : roleInEvent === 'Organizer' ? (
+      {roleInEvent === 'Organizer' ? (
           <div className="ai-block">
             <span className="ai-tag">Painel</span>
             <h3>Resumo do evento</h3>

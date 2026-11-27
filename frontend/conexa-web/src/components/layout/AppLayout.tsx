@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import { useEvent } from '../../features/events/EventContext';
 import { Alert, Avatar, EmptyState, Loading } from '../ui';
@@ -12,6 +12,25 @@ const svg = (d: string) => (
     <path d={d} />
   </svg>
 );
+const sidebarIconPaths: Record<string, string> = {
+  '/evento': 'M3 11l9-8 9 8M5 10v10h14V10',
+  '/programacao': 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z',
+  '/empresas': 'M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6',
+  '/participantes': 'M16 20v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM20 20v-2a3 3 0 00-2.5-3M15.5 3.2a3.5 3.5 0 010 6.6',
+  '/forum': 'M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8A8.5 8.5 0 018.7 3.9a8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z',
+  '/perfil': 'M20 21a8 8 0 10-16 0M12 12a4.5 4.5 0 100-9 4.5 4.5 0 000 9z',
+  '/avisos': 'M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0',
+  '/organizador/painel': 'M3 3v18h18M7 14l4-4 4 3 6-7',
+  '/organizador/evento': 'M4 5h16v15H4zM8 3v4m8-4v4M4 10h16',
+  '/organizador/participantes': 'M16 20v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7z',
+  '/organizador/convites': 'M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8M16 3h5v5M10 14L21 3',
+  '/organizador/moderacao': 'M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11zM9 12l2 2 4-4',
+  '/organizador/programacao': 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z',
+  '/organizador/taxonomia': 'M20 13l-7 7-10-10V3h7l10 10zM7.5 7.5h.01',
+  '/organizador/importacao': 'M12 15V3m-5 5l5-5 5 5M4 17v3h16v-3',
+  '/admin/eventos': 'M4 5h16v15H4zM8 3v4m8-4v4M4 10h16',
+  '/admin/usuarios': 'M16 20v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7z',
+};
 
 const home = { to: '/evento', label: 'Início', icon: svg('M3 11l9-8 9 8M5 10v10h14V10') };
 const bottomLinks = [
@@ -60,9 +79,25 @@ export function AppLayout() {
   const visibleBottomLinks = isParticipant ? participantBottomLinks : isExhibitor ? exhibitorBottomLinks : bottomLinks;
   const spaceItems = groups.find((group) => group.key === 'meu-espaco')?.items ?? [];
   const go = (to: string) => { setMenu(false); navigate(to); };
+  const sidebarGroups = groups.map((group) => ({ ...group, items: group.items.filter((item) => item.to !== '/perfil') }));
 
   return (
     <div className={`shell ${isParticipant ? 'shell-participant' : ''} ${isExhibitor ? 'shell-exhibitor' : ''}`}>
+      <aside className="app-sidebar">
+        <Link className="app-sidebar-brand" to="/evento"><span className="app-sidebar-mark">C</span><span>CONEXA<small>EVENT HUB</small></span></Link>
+        <span className="app-sidebar-caption">NAVEGAÇÃO</span>
+        <nav className="app-sidebar-nav" aria-label="Navegação do evento">
+          <NavLink to="/evento" end className="app-sidebar-link"><span className="app-sidebar-icon">{svg(sidebarIconPaths['/evento'])}</span>Início</NavLink>
+          {sidebarGroups.map((group) => <div className="app-sidebar-group" key={group.key}>
+            <span className="app-sidebar-group-label">{group.label}</span>
+            {group.items.map((item) => <NavLink key={item.to} to={item.to} className="app-sidebar-link" title={item.hint}>
+              <span className="app-sidebar-icon">{svg(sidebarIconPaths[item.to] ?? 'M4 4h16v16H4z')}</span>{item.label}
+            </NavLink>)}
+          </div>)}
+        </nav>
+        <div className="app-sidebar-account"><Avatar name={user.displayName} url={user.photoUrl} size={36} /><div className="grow"><strong>{user.displayName}</strong><small>{current?.name ?? 'CONEXA'}</small></div><span className="app-account-status" aria-label="Conta ativa" /></div>
+      </aside>
+      <div className="app-main">
       <header className="topbar">
         <div className="topbar-inner">
           <span className="logo" onClick={() => go('/evento')}>CONEXA</span>
@@ -119,6 +154,7 @@ export function AppLayout() {
         </button>}
       </nav>
       {sheet && !showSpaceInAvatar && <MobileMenu groups={groups} onClose={() => setSheet(false)} />}
+      </div>
     </div>
   );
 }

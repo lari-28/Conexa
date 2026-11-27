@@ -12,7 +12,8 @@ public class ReportsController(ApplicationDbContext db, IEventAccessService acce
         var exists = req.TargetType switch
         {
             ReportTargetType.Post => await db.Posts.AnyAsync(p => p.Id == req.TargetId && p.EventId == req.EventId, ct),
-            ReportTargetType.Comment => await db.Comments.AnyAsync(c => c.Id == req.TargetId && c.Post.EventId == req.EventId, ct),
+            ReportTargetType.Comment => await db.Comments.AnyAsync(c => c.Id == req.TargetId && c.Post.EventId == req.EventId, ct)
+                || await db.BoothComments.AnyAsync(c => c.Id == req.TargetId && c.Company.EventId == req.EventId, ct),
             ReportTargetType.Profile => await db.EventMemberships.AnyAsync(m => m.UserId == req.TargetId && m.EventId == req.EventId, ct),
             _ => false
         };

@@ -71,13 +71,13 @@ function Body({ d }: { d: EventInsights }) {
           <div key={x.tagId} className="stack" style={{ gap: '.2rem' }}>
             <div className="row"><strong className="grow">{x.name}{x.area && <span className="muted small"> · {x.area}</span>}</strong>
               <span className="small muted">demanda {x.demand} · oferta {x.supply}</span></div>
-            <div aria-hidden style={{ display: 'grid', gap: 2 }}>
-              <div style={{ height: 6, width: `${(x.demand / maxDemand) * 100}%`, background: 'var(--indigo)', borderRadius: 3 }} />
-              <div style={{ height: 6, width: `${(x.supply / maxDemand) * 100}%`, background: 'var(--chrome-shadow)', borderRadius: 3 }} />
+              <div aria-hidden style={{ display: 'grid', gap: 2 }}>
+              <div style={{ height: 6, width: `${(x.demand / maxDemand) * 100}%`, background: 'var(--cyan)', borderRadius: 3 }} />
+              <div style={{ height: 6, width: `${(x.supply / maxDemand) * 100}%`, background: 'var(--purple)', borderRadius: 3 }} />
             </div>
           </div>
         ))}
-        {d.themes.length > 0 && <small className="muted">Índigo = visitantes que escolheram ou mencionaram o tema · Teal = estandes com o tema.</small>}
+        {d.themes.length > 0 && <small className="muted">Ciano = visitantes que escolheram ou mencionaram o tema · Violeta = estandes com o tema.</small>}
       </Card>
 
       <h2>Perfis em comum</h2>

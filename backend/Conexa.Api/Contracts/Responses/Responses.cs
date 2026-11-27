@@ -49,6 +49,10 @@ public record PostResponse(Guid Id, Guid EventId, AuthorInfo Author, string Text
     ReactionType? MyReaction, bool CanEdit, bool CanDelete);
 public record CommentResponse(Guid Id, Guid PostId, AuthorInfo Author, string Text,
     DateTimeOffset CreatedAt, bool CanDelete);
+public record BoothCommentResponse(Guid Id, Guid CompanyId, AuthorInfo Author, string Text,
+    DateTimeOffset CreatedAt, bool CanDelete);
+public record BoothCommentsResponse(bool CanView, IReadOnlyList<BoothCommentResponse> Items,
+    int Page, int PageSize, int TotalCount);
 public record ReactionResponse(int Count, ReactionType? Mine);
 
 public record MemberResponse(Guid UserId, string DisplayName, string Email, EventRole RoleInEvent,

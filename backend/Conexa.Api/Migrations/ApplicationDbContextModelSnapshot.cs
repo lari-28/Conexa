@@ -140,6 +140,40 @@ namespace Conexa.Api.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.BoothComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CompanyId", "CreatedAt");
+
+                    b.ToTable("BoothComments");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -324,6 +358,62 @@ namespace Conexa.Api.Migrations
                     b.ToTable("Events");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTimeOffset>("EndsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset>("StartsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId", "StartsAt");
+
+                    b.ToTable("EventActivities");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivityPerson", b =>
+                {
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ActivityId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventActivityPeople");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.EventInvite", b =>
                 {
                     b.Property<Guid>("Id")
@@ -402,30 +492,6 @@ namespace Conexa.Api.Migrations
                     b.HasIndex("EventId", "CreatedAt");
 
                     b.ToTable("EventMaps");
-                });
-
-            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivity", b =>
-                {
-                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uuid");
-                    b.Property<string>("Description").HasMaxLength(2000).HasColumnType("character varying(2000)");
-                    b.Property<DateTimeOffset>("EndsAt").HasColumnType("timestamp with time zone");
-                    b.Property<Guid>("EventId").HasColumnType("uuid");
-                    b.Property<string>("Kind").IsRequired().HasMaxLength(20).HasColumnType("character varying(20)");
-                    b.Property<string>("Location").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
-                    b.Property<DateTimeOffset>("StartsAt").HasColumnType("timestamp with time zone");
-                    b.Property<string>("Title").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
-                    b.HasKey("Id");
-                    b.HasIndex("EventId", "StartsAt");
-                    b.ToTable("EventActivities");
-                });
-
-            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivityPerson", b =>
-                {
-                    b.Property<Guid>("ActivityId").HasColumnType("uuid");
-                    b.Property<Guid>("UserId").HasColumnType("uuid");
-                    b.HasKey("ActivityId", "UserId");
-                    b.HasIndex("UserId");
-                    b.ToTable("EventActivityPeople");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.EventMembership", b =>
@@ -974,6 +1040,25 @@ namespace Conexa.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.BoothComment", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Comment", b =>
                 {
                     b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "Author")
@@ -1002,34 +1087,6 @@ namespace Conexa.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventMap", b =>
-                {
-                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
-                        .WithMany("Maps")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivity", b =>
-                {
-                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
-                        .WithMany("Activities").HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade).IsRequired();
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivityPerson", b =>
-                {
-                    b.HasOne("Conexa.Api.Domain.Entities.EventActivity", "Activity")
-                        .WithMany("People").HasForeignKey("ActivityId").OnDelete(DeleteBehavior.Cascade).IsRequired();
-                    b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "User")
-                        .WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Restrict).IsRequired();
-                    b.Navigation("Activity");
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.CompanyMembership", b =>
@@ -1081,10 +1138,51 @@ namespace Conexa.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivity", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
+                        .WithMany("Activities")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivityPerson", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.EventActivity", "Activity")
+                        .WithMany("People")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Conexa.Api.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Conexa.Api.Domain.Entities.EventInvite", b =>
                 {
                     b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
                         .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("Conexa.Api.Domain.Entities.EventMap", b =>
+                {
+                    b.HasOne("Conexa.Api.Domain.Entities.Event", "Event")
+                        .WithMany("Maps")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1332,9 +1430,11 @@ namespace Conexa.Api.Migrations
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.Event", b =>
                 {
-                    b.Navigation("Memberships");
-                    b.Navigation("Maps");
                     b.Navigation("Activities");
+
+                    b.Navigation("Maps");
+
+                    b.Navigation("Memberships");
                 });
 
             modelBuilder.Entity("Conexa.Api.Domain.Entities.EventActivity", b =>

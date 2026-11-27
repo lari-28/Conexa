@@ -22,7 +22,7 @@ Razões:
 
 | Tema | Decisão |
 | --- | --- |
-| Tema visual | **Claro, guia índigo/coral/teal** (handoff). O tema escuro atual é descartado. `.superdesign/design-system.md` precisa ser reescrito. |
+| Tema visual | **Escuro EventHub Operations**, conforme o novo projeto Superdesign `a5e3f57c-3a50-4610-9b7b-0563f8758408`; substitui a direção clara do handoff e o tema antigo Circuit Black. Ver `.superdesign/design-system.md`. |
 | Matching v1 | Híbrido: tema (chips) + texto livre + público-alvo, com explicação e limiar de "sem match". **Sem LLM obrigatório**: começa com TF-IDF/pgvector; LLM só para explicação e sugestão de tags. |
 | Provedor de LLM | Adiado. Interface `ILlmProvider` no backend para trocar sem retrabalho. Decidir após teste com provedores reais. |
 | Taxonomia | Por evento, 2 níveis, biblioteca-base por setor + sugestão por IA + **fila de aprovação em lote** (tela central). |

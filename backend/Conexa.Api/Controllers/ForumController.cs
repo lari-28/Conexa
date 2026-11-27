@@ -138,15 +138,30 @@ public class ForumController(ApplicationDbContext db, IEventAccessService access
     {
         var comment = await db.Comments.Include(c => c.Post)
             .FirstOrDefaultAsync(c => c.Id == commentId && c.Status == ContentStatus.Visible, ct);
-        if (comment is null || !await access.IsMemberAsync(comment.Post.EventId, User, ct)) return NotFound();
-
-        if (comment.AuthorId == CurrentUserId) comment.Status = ContentStatus.Deleted;
-        else if (await access.IsOrganizerAsync(comment.Post.EventId, User, ct))
+        if (comment is not null)
         {
-            comment.Status = ContentStatus.Hidden;
-            db.AuditLogs.Add(Audit(comment.Post.EventId, "comment.hide", nameof(Comment), comment.Id));
+            if (!await access.IsMemberAsync(comment.Post.EventId, User, ct)) return NotFound();
+            if (comment.AuthorId == CurrentUserId) comment.Status = ContentStatus.Deleted;
+            else if (await access.IsOrganizerAsync(comment.Post.EventId, User, ct))
+            {
+                comment.Status = ContentStatus.Hidden;
+                db.AuditLogs.Add(Audit(comment.Post.EventId, "comment.hide", nameof(Comment), comment.Id));
+            }
+            else return Problem(statusCode: 403, title: "Você não pode remover conteúdo de terceiros. Use a denúncia.");
         }
-        else return Problem(statusCode: 403, title: "Você não pode remover conteúdo de terceiros. Use a denúncia.");
+        else
+        {
+            var boothComment = await db.BoothComments.Include(c => c.Company)
+                .FirstOrDefaultAsync(c => c.Id == commentId && c.Status == ContentStatus.Visible, ct);
+            if (boothComment is null || !await access.IsMemberAsync(boothComment.Company.EventId, User, ct)) return NotFound();
+            if (boothComment.AuthorId == CurrentUserId) boothComment.Status = ContentStatus.Deleted;
+            else if (await access.IsOrganizerAsync(boothComment.Company.EventId, User, ct))
+            {
+                boothComment.Status = ContentStatus.Hidden;
+                db.AuditLogs.Add(Audit(boothComment.Company.EventId, "booth.comment.hide", nameof(BoothComment), boothComment.Id));
+            }
+            else return Problem(statusCode: 403, title: "Você não pode remover conteúdo de terceiros. Use a denúncia.");
+        }
 
         await db.SaveChangesAsync(ct);
         return NoContent();
